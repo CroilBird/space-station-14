@@ -54,10 +54,6 @@
             min: 1
             max: 1
   - type: Appearance
-  - type: UserInterface
-    interfaces:
-      enum.DisposalUnitUiKey.Key:
-        type: DisposalUnitBoundUserInterface
   - type: ContainerContainer
     containers:
       disposals: !type:Container
@@ -79,6 +75,8 @@
   - type: DisposalUnit
   - type: ThrowInsertContainer
     containerId: disposals
+  - type: ActivatableUI
+    key: enum.DisposalUnitUiKey.Key
   - type: UserInterface
     interfaces:
       enum.DisposalUnitUiKey.Key:
@@ -130,9 +128,11 @@
     config:
       tag:
   - type: Appearance
+  - type: ActivatableUI
+    key: enum.MailingUnitUiKey.Key
   - type: UserInterface
     interfaces:
       enum.MailingUnitUiKey.Key:
-        type: DisposalUnitBoundUserInterface
+        type: MailingUnitBoundInterface
       enum.ConfigurationUiKey.Key:
         type: ConfigurationBoundUserInterface

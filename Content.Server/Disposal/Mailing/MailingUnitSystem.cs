@@ -57,8 +57,9 @@ public sealed class MailingUnitSystem : EntitySystem
                 SendTagRequestResponse(uid, args, component.Tag);
                 break;
             case NetCmdResponse when args.Data.TryGetValue(NetTag, out string? tag):
-                //Add the received tag request response to the list of targets
-                component.TargetList.Add(tag);
+                // Add the received tag request response to the list of targets if not already there
+                if (!component.TargetList.Contains(tag))
+                    component.TargetList.Add(tag);
                 UpdateUserInterface(uid, component);
                 break;
         }

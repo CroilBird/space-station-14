@@ -35,7 +35,6 @@ public sealed class MailingUnitSystem : EntitySystem
         SubscribeLocalEvent<MailingUnitComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
         SubscribeLocalEvent<MailingUnitComponent, BeforeDisposalFlushEvent>(OnBeforeFlush);
         SubscribeLocalEvent<MailingUnitComponent, ConfigurationSystem.ConfigurationUpdatedEvent>(OnConfigurationUpdated);
-        SubscribeLocalEvent<MailingUnitComponent, ActivateInWorldEvent>(HandleActivate);
         SubscribeLocalEvent<MailingUnitComponent, DisposalUnitUIStateUpdatedEvent>(OnDisposalUnitUIStateChange);
         SubscribeLocalEvent<MailingUnitComponent, TargetSelectedMessage>(OnTargetSelected);
     }
@@ -150,20 +149,6 @@ public sealed class MailingUnitSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
-    private void HandleActivate(EntityUid uid, MailingUnitComponent component, ActivateInWorldEvent args)
-    {
-        if (args.Handled || !args.Complex)
-            return;
-
-        if (!EntityManager.TryGetComponent(args.User, out ActorComponent? actor))
-        {
-            return;
-        }
-
-        args.Handled = true;
-        UpdateTargetList(uid, component);
-        _userInterfaceSystem.OpenUi(uid, MailingUnitUiKey.Key, actor.PlayerSession);
-    }
 
     /// <summary>
     /// Gets called when the disposal unit components ui state changes. This is required because the mailing unit requires a disposal unit component and overrides its ui

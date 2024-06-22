@@ -9,15 +9,15 @@ using static Content.Shared.Disposal.Components.SharedDisposalUnitComponent;
 namespace Content.Client.Disposal.UI
 {
     /// <summary>
-    /// Initializes a <see cref="MailingUnitWindow"/> or a <see cref="_window"/> and updates it when new server messages are received.
+    /// Initializes a <see cref="MailingUnitWindow"/> or a <see cref="MailingUnitWindow"/> and updates it when new server messages are received.
     /// </summary>
     [UsedImplicitly]
-    public sealed class DisposalUnitBoundUserInterface : BoundUserInterface
+    public sealed class MailingUnitBoundInterface : BoundUserInterface
     {
         [ViewVariables]
-        public DisposalUnitWindow? _window;
+        private MailingUnitWindow? _window;
 
-        public DisposalUnitBoundUserInterface(EntityUid owner, Enum uiKey) : base(owner, uiKey)
+        public MailingUnitBoundInterface(EntityUid owner, Enum uiKey) : base(owner, uiKey)
         {
         }
 
@@ -38,7 +38,7 @@ namespace Content.Client.Disposal.UI
         {
             base.Open();
 
-            _window = new DisposalUnitWindow();
+            _window = new MailingUnitWindow();
 
             _window.OpenCenteredRight();
             _window.OnClose += Close;
@@ -46,13 +46,15 @@ namespace Content.Client.Disposal.UI
             _window.Eject.OnPressed += _ => ButtonPressed(UiButton.Eject);
             _window.Engage.OnPressed += _ => ButtonPressed(UiButton.Engage);
             _window.Power.OnPressed += _ => ButtonPressed(UiButton.Power);
+
+            _window.TargetListContainer.OnItemSelected += TargetSelected;
         }
 
         protected override void UpdateState(BoundUserInterfaceState state)
         {
             base.UpdateState(state);
 
-            if (state is not DisposalUnitBoundUserInterfaceState cast)
+            if (state is not MailingUnitBoundUserInterfaceState cast)
                 return;
 
             _window?.UpdateState(cast);

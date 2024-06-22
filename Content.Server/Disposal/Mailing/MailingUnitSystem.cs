@@ -187,6 +187,7 @@ public sealed class MailingUnitSystem : EntitySystem
     private void OnPowerChanged(EntityUid uid, MailingUnitComponent component, PowerChangedEvent args)
     {
         // if we are powering on, send a request for tags
+        // this is so that someone turn it on and off again when something is off. very realistic
         if (args.Powered)
             UpdateTargetList(uid, component);
     }

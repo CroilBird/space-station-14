@@ -22,9 +22,10 @@ namespace Content.Client.Disposal.UI
         /// <returns>true if we should stop updating every frame.</returns>
         public bool UpdateState(MailingUnitBoundUserInterfaceState state)
         {
-            // mailing stuff first
+            // we will handle the mail part first so we can just exit if that's all we are doing
+            // later on
             Title = Loc.GetString("ui-mailing-unit-window-title", ("tag", state.Tag ?? " "));
-            //UnitTag.Text = state.Tag;
+
             Target.Text = state.Target;
 
             TargetListContainer.Clear();
@@ -33,9 +34,8 @@ namespace Content.Client.Disposal.UI
                 TargetListContainer.AddItem(target);
             }
 
-            // optionally disposal state if it's there
-            // this won't be here if we're forcing an update when something on the mail
-            // bits above changes
+            // optionally handle the disposal state if it's not null
+            // this will be null if we're updating the UI for the mailUnit component only
             if (state.DisposalState == null)
                 return false;
 

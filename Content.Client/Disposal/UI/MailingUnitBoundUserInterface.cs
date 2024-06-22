@@ -9,7 +9,7 @@ using static Content.Shared.Disposal.Components.SharedDisposalUnitComponent;
 namespace Content.Client.Disposal.UI
 {
     /// <summary>
-    /// Initializes a <see cref="MailingUnitWindow"/> or a <see cref="MailingUnitWindow"/> and updates it when new server messages are received.
+    /// Initializes a <see cref="MailingUnitWindow"/> and updates it when new server messages are received.
     /// </summary>
     [UsedImplicitly]
     public sealed class MailingUnitBoundInterface : BoundUserInterface

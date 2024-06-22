@@ -9,13 +9,13 @@ using static Content.Shared.Disposal.Components.SharedDisposalUnitComponent;
 namespace Content.Client.Disposal.UI
 {
     /// <summary>
-    /// Initializes a <see cref="MailingUnitWindow"/> or a <see cref="_window"/> and updates it when new server messages are received.
+    /// Initializes a <see cref="DisposalUnitWindow"/> and updates it when new server messages are received.
     /// </summary>
     [UsedImplicitly]
     public sealed class DisposalUnitBoundUserInterface : BoundUserInterface
     {
         [ViewVariables]
-        public DisposalUnitWindow? _window;
+        private DisposalUnitWindow? _window;
 
         public DisposalUnitBoundUserInterface(EntityUid owner, Enum uiKey) : base(owner, uiKey)
         {

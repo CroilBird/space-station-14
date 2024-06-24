@@ -27,6 +27,7 @@ public sealed class MailingUnitSystem : EntitySystem
     private const string NetCmdSent = "mail_sent";
     private const string NetCmdRequest = "get_mailer_tag";
     private const string NetCmdResponse = "mailer_tag";
+    private const string NetCmdUpdate = "tag_change";
     public override void Initialize()
     {
         base.Initialize();
@@ -61,6 +62,9 @@ public sealed class MailingUnitSystem : EntitySystem
                 if (!component.TargetList.Contains(tag))
                     component.TargetList.Add(tag);
                 UpdateUserInterface(uid, component);
+                break;
+            case NetCmdUpdate:
+                UpdateTag(uid, component, args.Data);
                 break;
         }
     }
@@ -135,6 +139,30 @@ public sealed class MailingUnitSystem : EntitySystem
         _deviceNetworkSystem.QueuePacket(uid, null, payload, null, null, device);
     }
 
+    private void SendTagUpdate(EntityUid uid, MailingUnitComponent component, string oldTag, string newTag, DeviceNetworkComponent? device = null)
+    {
+        if (!Resolve(uid, ref device, false))
+            return;
+
+        var payload = new NetworkPayload
+        {
+            [DeviceNetworkConstants.Command] = NetCmdUpdate,
+            [NetSrc] = oldTag,
+            [NetTag] = newTag
+        };
+
+        _deviceNetworkSystem.QueuePacket(uid, null, payload, null, null, device);
+    }
+
+    private void UpdateTag(EntityUid uid, MailingUnitComponent component, NetworkPayload data)
+    {
+        if (!data.TryGetValue<string>(NetSrc, out var oldTag) || !data.TryGetValue<string>(NetTag, out var newTag))
+            return;
+
+        component.TargetList.Remove(oldTag);
+        component.TargetList.Add(newTag);
+    }
+
     /// <summary>
     /// Gets called when the units tag got updated
     /// </summary>
@@ -147,7 +175,17 @@ public sealed class MailingUnitSystem : EntitySystem
             return;
         }
 
-        component.Tag = configuration[TagConfigurationKey];
+        var oldTag = component.Tag;
+        var newTag = configuration[TagConfigurationKey];
+
+        // this isn't great. handling of a null tag is all over the place in this component.
+        // to be fixed in rework
+        if (oldTag == null || newTag == null)
+            return;
+
+        SendTagUpdate(uid, component, oldTag, newTag);
+
+        component.Tag = newTag;
         UpdateUserInterface(uid, component);
     }
 

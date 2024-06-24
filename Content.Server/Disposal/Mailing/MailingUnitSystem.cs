@@ -1,4 +1,4 @@
-﻿using Content.Server.Configurable;
+using Content.Server.Configurable;
 using Content.Server.DeviceNetwork;
 using Content.Server.DeviceNetwork.Components;
 using Content.Server.DeviceNetwork.Systems;
@@ -37,6 +37,7 @@ public sealed class MailingUnitSystem : EntitySystem
         SubscribeLocalEvent<MailingUnitComponent, ConfigurationSystem.ConfigurationUpdatedEvent>(OnConfigurationUpdated);
         SubscribeLocalEvent<MailingUnitComponent, DisposalUnitUIStateUpdatedEvent>(OnDisposalUnitUIStateChange);
         SubscribeLocalEvent<MailingUnitComponent, TargetSelectedMessage>(OnTargetSelected);
+        SubscribeLocalEvent<MailingUnitComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
 
@@ -181,5 +182,12 @@ public sealed class MailingUnitSystem : EntitySystem
             return false;
 
         return true;
+    }
+
+    private void OnPowerChanged(EntityUid uid, MailingUnitComponent component, PowerChangedEvent args)
+    {
+        // if we are powering on, send a request for tags
+        if (args.Powered)
+            UpdateTargetList(uid, component);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Content.Shared.Disposal.Components;
+using Content.Shared.Disposal.Components;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared.Disposal;
@@ -9,9 +9,9 @@ public sealed class MailingUnitBoundUserInterfaceState : BoundUserInterfaceState
     public string? Target;
     public List<string> TargetList;
     public string? Tag;
-    public SharedDisposalUnitComponent.DisposalUnitBoundUserInterfaceState DisposalState;
+    public SharedDisposalUnitComponent.DisposalUnitBoundUserInterfaceState? DisposalState;
 
-    public MailingUnitBoundUserInterfaceState(SharedDisposalUnitComponent.DisposalUnitBoundUserInterfaceState disposalState, string? target, List<string> targetList, string? tag)
+    public MailingUnitBoundUserInterfaceState(SharedDisposalUnitComponent.DisposalUnitBoundUserInterfaceState? disposalState, string? target, List<string> targetList, string? tag)
     {
         DisposalState = disposalState;
         Target = target;
@@ -25,6 +25,8 @@ public sealed class MailingUnitBoundUserInterfaceState : BoundUserInterfaceState
             return false;
         if (ReferenceEquals(this, other))
             return true;
+        if (DisposalState == null)
+            return false;
         return DisposalState.Equals(other.DisposalState)
                && Target == other.Target
                && TargetList.Equals(other.TargetList)

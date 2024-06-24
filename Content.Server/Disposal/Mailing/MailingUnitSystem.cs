@@ -161,9 +161,6 @@ public sealed class MailingUnitSystem : EntitySystem
 
     private void UpdateUserInterface(EntityUid uid, MailingUnitComponent component)
     {
-        if (component.DisposalUnitInterfaceState == null)
-            return;
-
         var state = new MailingUnitBoundUserInterfaceState(component.DisposalUnitInterfaceState, component.Target, component.TargetList, component.Tag);
         _userInterfaceSystem.SetUiState(uid, MailingUnitUiKey.Key, state);
     }

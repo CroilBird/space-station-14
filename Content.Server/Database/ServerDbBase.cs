@@ -1829,13 +1829,16 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
         {
             await using var db = await GetDb();
 
-            var messages = db.DbContext.ParrotMemory
-                .Select(parrotMemory => parrotMemory.Message)
-                .Take(limit);
+            // get count of records
+            var count = db.DbContext.ParrotMemory.Count();
 
-            await foreach (var message in messages.AsAsyncEnumerable())
+            var random = new Random();
+
+            for (var i = 0; i < limit; i++)
             {
-                yield return message;
+                yield return db.DbContext.ParrotMemory
+                    .Select(parrotMemory => parrotMemory.Message)
+                    .ElementAt(random.Next(0, count));
             }
         }
 

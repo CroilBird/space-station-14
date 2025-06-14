@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using Content.Server.Administration.Logs;
 using Content.Server.Animals.Components;
 using Content.Server.Chat.Systems;
+using Content.Server.Database;
 using Content.Server.Radio;
 using Content.Server.Radio.Components;
 using Content.Server.Speech;
@@ -9,8 +11,12 @@ using Content.Shared.ActionBlocker;
 using Content.Shared.Chat;
 using Content.Shared.Clothing;
 using Content.Shared.Database;
+using Content.Shared.Mind;
+using Content.Shared.Mind.Components;
 using Content.Shared.Mobs.Systems;
+using Content.Shared.Players.PlayTimeTracking;
 using Content.Shared.Radio;
+using Robust.Server.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
@@ -25,6 +31,9 @@ namespace Content.Server.Animals.Systems;
 /// With a ParrotListenerComponent, entities listen to nearby local IC chat to fill memory.
 /// If an entity also has a ParrotRadioComponent, it will also listen for messages on radio channels of radios it has
 /// equipped. It will also have a chance to say things on radio channels of radios it has equipped.
+///
+/// If an entity has a ParrotDbMemoryComponent, this system periodically fills the ParrotMemoryComponent with
+/// entries from the database, creating an inter-round parrot.
 /// </summary>
 public sealed partial class ParrotSystem : EntitySystem
 {
@@ -32,8 +41,11 @@ public sealed partial class ParrotSystem : EntitySystem
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly IAdminLogManager _adminLogger = default!;
     [Dependency] private readonly IGameTiming _gameTiming = default!;
+    [Dependency] private readonly IPlayerManager _playerManager = default!;
     [Dependency] private readonly IPrototypeManager _proto = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly IServerDbManager _db = default!;
+    [Dependency] private readonly ISharedPlaytimeManager _playtimeManager = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
 
     public override void Initialize()
@@ -208,15 +220,15 @@ public sealed partial class ParrotSystem : EntitySystem
     {
         // reset next speak interval if the entity has a ParrotSpeakComponent and this is the first thing it learns
         // this is done so that a parrot doesn't speak the moment it learns something
-        if (TryComp<ParrotSpeakerComponent>(entity, out var speakerComponent) && entity.Comp.SpeechMemory.Count == 0)
-        {
-            var randomSpeakInterval = _random.Next(speakerComponent.MinSpeakInterval, speakerComponent.MaxSpeakInterval);
-            speakerComponent.NextSpeakInterval = _gameTiming.CurTime + randomSpeakInterval;
-        }
+        if (entity.Comp.SpeechMemory.Count == 0)
+            ResetNextSpeakInterval(entity.Owner);
 
         // log a low-priority chat type log to the admin logger
         // specifies what message was learnt by what entity, and who taught the message to that entity
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Parroting entity {ToPrettyString(entity):entity} learned the phrase \"{message}\" from {ToPrettyString(source):speaker}");
+
+        // if this entity has a persistent memory, try to commit the message to db
+        TrySaveMessageDb(entity.Owner, message, source);
 
         // add a new message if there is space in the memory
         if (entity.Comp.SpeechMemory.Count < entity.Comp.MaxSpeechMemory)
@@ -246,13 +258,27 @@ public sealed partial class ParrotSystem : EntitySystem
     }
 
     /// <summary>
+    /// Resets the NextSpeakInterval on a ParrotSpeakerComponent, useful if the parrot needs a prod to speak soon.
+    /// </summary>
+    /// <param name="entity"></param>
+    public void ResetNextSpeakInterval(Entity<ParrotSpeakerComponent?> entity)
+    {
+        // return if there is no ParrotSpeakerComponent
+        if (!Resolve<ParrotSpeakerComponent>(entity, ref entity.Comp))
+            return;
+
+        // set the next speak interval to the current time and some random delay
+        var randomSpeakInterval = _random.Next(entity.Comp.MinSpeakInterval, entity.Comp.MaxSpeakInterval);
+        entity.Comp.NextSpeakInterval = _gameTiming.CurTime + randomSpeakInterval;
+    }
+
+    /// <summary>
     /// Actually say something.
     /// Expects an entity to have a ParrotSpeakerComponent and a ParrotMemoryComponent at minimum
     /// If an entity also has a ParrotRadioComponent, it will have a chance to speak on the radio
     /// </summary>
     private void Speak(Entity<ParrotSpeakerComponent, ParrotMemoryComponent> entity)
     {
-
         var memory = entity.Comp2;
 
         // get a random message from the memory
@@ -300,6 +326,98 @@ public sealed partial class ParrotSystem : EntitySystem
         return true;
     }
 
+    /// <summary>
+    /// Attempt to save a message to the database
+    ///
+    /// This contains a few checks to prevent garbage from filling the database
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="message"></param>
+    /// <param name="sourcePlayer"></param>
+    public void TrySaveMessageDb(Entity<ParrotDbMemoryComponent?> entity, string message, EntityUid sourcePlayer)
+    {
+        // return if there is no db memory component on the entity
+        if (!Resolve<ParrotDbMemoryComponent>(entity, ref entity.Comp))
+            return;
+
+        // return if the message source entity does not have a MindContainerComponent This should mean only
+        // player-controlled entities can commit messages to the database.
+        //
+        // Polly is likely to have a ParrotDbMemoryComponent, and is likely to be near stuff like EngiDrobes, so this
+        // should prevent the database filling up with "Afraid of radiation? Then wear yellow!" etc.
+        if (!TryComp<MindContainerComponent>(sourcePlayer, out var mindContainer))
+            return;
+
+        // return if this mindcontainer has no mind. Could happen with cogni'd entities that aren't player controlled yet
+        if (!mindContainer.HasMind)
+            return;
+
+        // return if the mind entity has no mind component. Should not happen
+        if (!TryComp<MindComponent>(mindContainer.Mind, out var mindComponent))
+            return;
+
+        // get the player sessionID
+        if (!_playerManager.TryGetSessionById(mindComponent.UserId, out var session))
+            return;
+
+        // check player playtime before committing message
+        var playtime = _playtimeManager.GetPlayTimes(session);
+
+        // return if the player is missing an overall playtime for whatever reason
+        if (!playtime.TryGetValue(PlayTimeTrackingShared.TrackerOverall, out var overallPlaytime))
+            return;
+
+        // return if the player has too little playtime
+        if (overallPlaytime < entity.Comp.MinimumSourcePlaytime)
+            return;
+
+        CommitMessageToPersistent(entity, message, session.UserId);
+    }
+
+    public void CommitMessageToPersistent(
+        EntityUid entity,
+        string message,
+        Guid sourcePlayerGuid)
+    {
+        // add a log line confirming that an entry was added to the database
+        _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Parroting entity {ToPrettyString(entity):entity} is saving the phrase \"{message}\" to database.");
+
+        // actually save the message to the database
+        _db.AddParrotMessage(message, sourcePlayerGuid);
+    }
+
+    /// <summary>
+    /// Updates the messages stored in ParrotMemoryComponent by retrieving fresh ones from the database
+    /// </summary>
+    /// <param name="entity"></param>
+    public async Task RefreshMemoryFromDb(Entity<ParrotDbMemoryComponent, ParrotMemoryComponent> entity)
+    {
+        // get an enum for new messages
+        var newMessages = _db.GetParrotMessages(entity.Comp2.MaxSpeechMemory);
+
+        // There are some edge cases where the database may not be full enough yet to fill the memory.
+        // Ensure that the memory is always filled up to capacity first, and only after start replacing
+        // existing messages.
+        var idx = 0;
+        await foreach (var newMessage in newMessages)
+        {
+            // if the memory is not full yet, add to it
+            if (entity.Comp2.SpeechMemory.Count < entity.Comp2.MaxSpeechMemory)
+            {
+                entity.Comp2.SpeechMemory.Add(newMessage);
+                continue;
+            }
+
+            // otherwise, replace old entries
+            entity.Comp2.SpeechMemory[idx] = newMessage;
+            idx += 1;
+        }
+
+        // Reset the speak interval if the parrot hadn't learnt anything yet. This will usually be on round start
+        if (entity.Comp2.SpeechMemory.Count == 0)
+            ResetNextSpeakInterval(entity.Owner);
+    }
+
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
@@ -307,7 +425,7 @@ public sealed partial class ParrotSystem : EntitySystem
         // get current game time for delay
         var currentGameTime = _gameTiming.CurTime;
 
-        // query to get all components with parrot memory and speaker
+        // query to get all entities with parrot memory and speaker
         var query = EntityQueryEnumerator<ParrotMemoryComponent, ParrotSpeakerComponent>();
         while (query.MoveNext(out var uid, out var parrotMemory, out var parrotSpeaker))
         {
@@ -326,6 +444,20 @@ public sealed partial class ParrotSystem : EntitySystem
 
             // try to speak
             TrySpeak((uid, parrotSpeaker, parrotMemory));
+        }
+
+        // query to get all entities with a persistent memory and memory
+        var persistentMemoryQuery = EntityQueryEnumerator<ParrotDbMemoryComponent, ParrotMemoryComponent>();
+        while (persistentMemoryQuery.MoveNext(out var uid, out var persistentMemory, out var memory))
+        {
+            // do nothing if we're not due for a refresh
+            if (currentGameTime < persistentMemory.NextRefresh)
+                continue;
+
+            // otherwise refresh and update the refresh interval
+            RefreshMemoryFromDb((uid, persistentMemory, memory));
+
+            persistentMemory.NextRefresh += persistentMemory.RefreshInterval;
         }
     }
 }

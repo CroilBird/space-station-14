@@ -661,6 +661,28 @@ namespace Content.Server.Database.Migrations.Sqlite
                     b.ToTable("job", (string)null);
                 });
 
+            modelBuilder.Entity("Content.Server.Database.ParrotMemory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("parrot_memory_id");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("message");
+
+                    b.Property<Guid>("SourcePlayer")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("source_player");
+
+                    b.HasKey("Id")
+                        .HasName("PK_parrot_memory");
+
+                    b.ToTable("parrot_memory", (string)null);
+                });
+
             modelBuilder.Entity("Content.Server.Database.PlayTime", b =>
                 {
                     b.Property<int>("Id")

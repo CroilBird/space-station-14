@@ -46,6 +46,7 @@ namespace Content.Server.Database
         public DbSet<RoleWhitelist> RoleWhitelists { get; set; } = null!;
         public DbSet<BanTemplate> BanTemplate { get; set; } = null!;
         public DbSet<IPIntelCache> IPIntelCache { get; set; } = null!;
+        public DbSet<ParrotMemory> ParrotMemory { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1329,5 +1330,25 @@ namespace Content.Server.Database
         /// The score IPIntel returned
         /// </summary>
         public float Score { get; set; }
+    }
+
+    /// <summary>
+    /// Persistent memory for parrots
+    /// </summary>
+    [PrimaryKey(nameof(Id))]
+    public class ParrotMemory
+    {
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Chat message committed to memory
+        /// </summary>
+        public required string Message { get; set; }
+
+        /// <summary>
+        /// Player from which this message originally came
+        /// </summary>
+        [Required, ForeignKey("Player")]
+        public Guid SourcePlayer { get; set; }
     }
 }

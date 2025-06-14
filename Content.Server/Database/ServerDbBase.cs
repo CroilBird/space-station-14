@@ -1822,6 +1822,39 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
 
         #endregion
 
+
+        #region Parrots
+
+        public async IAsyncEnumerable<string> GetParrotMessages(int limit)
+        {
+            await using var db = await GetDb();
+
+            var messages = db.DbContext.ParrotMemory
+                .Select(parrotMemory => parrotMemory.Message)
+                .Take(limit);
+
+            await foreach (var message in messages.AsAsyncEnumerable())
+            {
+                yield return message;
+            }
+        }
+
+        public async Task AddParrotMemory(string message, Guid source)
+        {
+            await using var db = await GetDb();
+
+            var newMemory = new ParrotMemory()
+            {
+                Message = message,
+                SourcePlayer = source,
+            };
+
+            db.DbContext.ParrotMemory.Add(newMemory);
+            await db.DbContext.SaveChangesAsync();
+        }
+
+        #endregion
+
         public abstract Task SendNotification(DatabaseNotification notification);
 
         // SQLite returns DateTime as Kind=Unspecified, Npgsql actually knows for sure it's Kind=Utc.

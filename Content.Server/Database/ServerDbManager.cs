@@ -363,6 +363,14 @@ namespace Content.Server.Database
         Task SendNotification(DatabaseNotification notification);
 
         #endregion
+
+        #region Parrots
+
+        IAsyncEnumerable<string> GetParrotMessages(int limit);
+
+        Task AddParrotMessage(string message, Guid source);
+
+        #endregion
     }
 
     /// <summary>
@@ -1070,6 +1078,21 @@ namespace Content.Server.Database
             DbWriteOpsMetric.Inc();
             return RunDbCommand(() => _db.SendNotification(notification));
         }
+
+        #region Parrots
+
+        public IAsyncEnumerable<string> GetParrotMessages(int limit)
+        {
+            return RunDbCommand(() => _db.GetParrotMessages(limit));
+        }
+
+        public Task AddParrotMessage(string message, Guid source)
+        {
+            return RunDbCommand(() => _db.AddParrotMemory(message, source));
+        }
+
+        #endregion
+
 
         private async void HandleDatabaseNotification(DatabaseNotification notification)
         {

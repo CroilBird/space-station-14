@@ -18,7 +18,9 @@ namespace Content.Server.Database.Migrations.Sqlite
                     parrot_memory_id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     message = table.Column<string>(type: "TEXT", nullable: false),
-                    source_player = table.Column<Guid>(type: "TEXT", nullable: false)
+                    source_player = table.Column<Guid>(type: "TEXT", nullable: false),
+                    round = table.Column<int>(type: "INTEGER", nullable: false),
+                    block = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

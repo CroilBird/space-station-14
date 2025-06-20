@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Content.Server.Database.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteServerDbContext))]
-    [Migration("20250614133529_ParrotMemory")]
+    [Migration("20250620205735_ParrotMemory")]
     partial class ParrotMemory
     {
         /// <inheritdoc />
@@ -671,10 +671,18 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("parrot_memory_id");
 
+                    b.Property<bool>("Block")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("block");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("message");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("round");
 
                     b.Property<Guid>("SourcePlayer")
                         .HasColumnType("TEXT")

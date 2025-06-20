@@ -3,6 +3,7 @@ using Content.Server.Administration.Logs;
 using Content.Server.Animals.Components;
 using Content.Server.Chat.Systems;
 using Content.Server.Database;
+using Content.Server.GameTicking;
 using Content.Server.Radio;
 using Content.Server.Radio.Components;
 using Content.Server.Speech;
@@ -47,6 +48,7 @@ public sealed partial class ParrotSystem : EntitySystem
     [Dependency] private readonly IServerDbManager _db = default!;
     [Dependency] private readonly ISharedPlaytimeManager _playtimeManager = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
+    [Dependency] private readonly GameTicker _ticker = default!;
 
     public override void Initialize()
     {
@@ -382,8 +384,10 @@ public sealed partial class ParrotSystem : EntitySystem
         // add a log line confirming that an entry was added to the database
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Parroting entity {ToPrettyString(entity):entity} is saving the phrase \"{message}\" to database.");
 
+        var currentRoundId = _ticker.RoundId;
+
         // actually save the message to the database
-        _db.AddParrotMessage(message, sourcePlayerGuid);
+        _db.AddParrotMessage(message, sourcePlayerGuid, currentRoundId);
     }
 
     /// <summary>

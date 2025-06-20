@@ -19,7 +19,9 @@ namespace Content.Server.Database.Migrations.Postgres
                     parrot_memory_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     message = table.Column<string>(type: "text", nullable: false),
-                    source_player = table.Column<Guid>(type: "uuid", nullable: false)
+                    source_player = table.Column<Guid>(type: "uuid", nullable: false),
+                    round = table.Column<int>(type: "integer", nullable: false),
+                    block = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

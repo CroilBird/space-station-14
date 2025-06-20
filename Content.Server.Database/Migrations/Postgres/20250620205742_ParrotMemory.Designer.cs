@@ -16,7 +16,7 @@ using NpgsqlTypes;
 namespace Content.Server.Database.Migrations.Postgres
 {
     [DbContext(typeof(PostgresServerDbContext))]
-    [Migration("20250614134648_ParrotMemory")]
+    [Migration("20250620205742_ParrotMemory")]
     partial class ParrotMemory
     {
         /// <inheritdoc />
@@ -711,10 +711,18 @@ namespace Content.Server.Database.Migrations.Postgres
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Block")
+                        .HasColumnType("boolean")
+                        .HasColumnName("block");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("message");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("integer")
+                        .HasColumnName("round");
 
                     b.Property<Guid>("SourcePlayer")
                         .HasColumnType("uuid")

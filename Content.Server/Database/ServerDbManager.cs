@@ -368,7 +368,7 @@ namespace Content.Server.Database
 
         IAsyncEnumerable<string> GetParrotMessages(int limit);
 
-        Task AddParrotMessage(string message, Guid source);
+        Task AddParrotMessage(string message, Guid sourcePlayer, int roundId);
 
         #endregion
     }
@@ -1086,9 +1086,9 @@ namespace Content.Server.Database
             return RunDbCommand(() => _db.GetParrotMessages(limit));
         }
 
-        public Task AddParrotMessage(string message, Guid source)
+        public Task AddParrotMessage(string message, Guid sourcePlayer, int roundId)
         {
-            return RunDbCommand(() => _db.AddParrotMemory(message, source));
+            return RunDbCommand(() => _db.AddParrotMemory(message, sourcePlayer, roundId));
         }
 
         #endregion

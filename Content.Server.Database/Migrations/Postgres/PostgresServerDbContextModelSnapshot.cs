@@ -708,10 +708,18 @@ namespace Content.Server.Database.Migrations.Postgres
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Block")
+                        .HasColumnType("boolean")
+                        .HasColumnName("block");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("message");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("integer")
+                        .HasColumnName("round");
 
                     b.Property<Guid>("SourcePlayer")
                         .HasColumnType("uuid")

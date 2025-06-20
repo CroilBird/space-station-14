@@ -1842,17 +1842,20 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             }
         }
 
-        public async Task AddParrotMemory(string message, Guid source)
+        public async Task AddParrotMemory(string message, Guid sourcePlayer, int roundId)
         {
             await using var db = await GetDb();
 
             var newMemory = new ParrotMemory()
             {
                 Message = message,
-                SourcePlayer = source,
+                SourcePlayer = sourcePlayer,
+                Round = roundId,
             };
 
-            db.DbContext.ParrotMemory.Add(newMemory);
+            db.DbContext.ParrotMemory
+
+                .Add(newMemory);
             await db.DbContext.SaveChangesAsync();
         }
 

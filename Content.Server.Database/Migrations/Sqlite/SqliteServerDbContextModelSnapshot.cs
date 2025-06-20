@@ -668,10 +668,18 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("parrot_memory_id");
 
+                    b.Property<bool>("Block")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("block");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("message");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("round");
 
                     b.Property<Guid>("SourcePlayer")
                         .HasColumnType("TEXT")

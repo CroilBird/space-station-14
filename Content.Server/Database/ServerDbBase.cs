@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Content.Server.Administration.Logs;
 using Content.Server.Administration.Managers;
 using Content.Shared.Administration.Logs;
+using Content.Shared.Administration.ParrotMessages;
 using Content.Shared.Construction.Prototypes;
 using Content.Shared.Database;
 using Content.Shared.Humanoid;
@@ -1842,6 +1843,51 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             }
         }
 
+        public async IAsyncEnumerable<SharedParrotMessage> GetParrotMessages(bool showBlocked, bool showInactive)
+        {
+            await using var db = await GetDb();
+
+            // block filter. If set to true, lambda always returns true. Otherwise it returns true if the message is
+            // not blocked
+            var messageQuery = db.DbContext.ParrotMessages
+                .Where(message => showBlocked || !message.Block);
+
+            var messagePlayers = messageQuery.Select(message => message.SourcePlayer);
+
+            var playerQuery = db.DbContext.Player
+                .Where(player => messagePlayers.Contains(player.UserId))
+                .Select(player => new
+                {
+                    player.UserId,
+                    UserName = player.LastSeenUserName,
+                });
+
+            var joined = messageQuery.Join(playerQuery,
+                message => message.SourcePlayer,
+                player => player.UserId,
+                resultSelector: (message, player) => new
+                {
+                    message.Id,
+                    message.MessageText,
+                    message.Round,
+                    SourcePlayerUserName = player.UserName,
+                    SourcePlayerGuid = message.SourcePlayer,
+                    message.Block,
+                });
+
+            await foreach (var result in joined.AsAsyncEnumerable())
+            {
+                yield return new SharedParrotMessage(
+                    result.Id,
+                    result.MessageText,
+                    result.Round,
+                    result.SourcePlayerUserName,
+                    result.SourcePlayerGuid,
+                    result.Block
+                );
+            }
+        }
+
         public async Task AddParrotMessage(string message, Guid sourcePlayer, int roundId)
         {
             await using var db = await GetDb();
@@ -1854,8 +1900,20 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             };
 
             db.DbContext.ParrotMessages
-
                 .Add(newMessage);
+            await db.DbContext.SaveChangesAsync();
+        }
+
+        public async Task SetParrotMessageBlock(int messageId, bool blocked)
+        {
+            await using var db = await GetDb();
+
+            var message = await db.DbContext.ParrotMessages
+                .Where(message => message.Id == messageId)
+                .SingleAsync();
+
+            message.Block = blocked;
+
             await db.DbContext.SaveChangesAsync();
         }
 

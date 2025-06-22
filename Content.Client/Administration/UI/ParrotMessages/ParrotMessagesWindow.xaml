@@ -1,0 +1,39 @@
+<ui:FancyWindow xmlns="https://spacestation14.io"
+                xmlns:cc="clr-namespace:Content.Client.Administration.UI.CustomControls"
+                xmlns:parrotmessages="clr-namespace:Content.Client.Administration.UI.ParrotMessages"
+                xmlns:ui="clr-namespace:Content.Client.UserInterface.Controls"
+                VerticalExpand="True" HorizontalExpand="True"
+                Title="{Loc parrot-messages-title}"
+                SetSize="800 400">
+    <PanelContainer StyleClasses="BackgroundDark">
+        <BoxContainer Orientation="Vertical" Margin="4">
+            <!-- view checkboxes and refresh button -->
+            <BoxContainer Orientation="Horizontal" Margin="4">
+                <Label Name="ParrotMessageCountLabel" Text="{Loc parrot-messages-loading}" HorizontalExpand="True"></Label>
+                <cc:HSeparator Margin="4 0" />
+                <CheckBox Access="Public" Name="ParrotMessageHideBlockCheck" Text="{Loc parrot-messages-show-blocked}" ToolTip="{Loc 'parrot-messages-show-blocked-tooltip'}"></CheckBox>
+                <cc:HSeparator Margin="4 0" />
+                <CheckBox Access="Public" Name="ParrotMessageFilterOldCheck" Text="{Loc parrot-messages-show-old}" ToolTip="{Loc 'parrot-messages-show-old-tooltip'}"></CheckBox>
+                <cc:HSeparator Margin="4 0" />
+                <Button Access="Public" Name="ParrotMessageRefreshButton" Text="{Loc parrot-messages-refresh}"></Button>
+            </BoxContainer>
+
+            <!-- filter editor -->
+            <BoxContainer Orientation="Horizontal" Margin="4">
+                <LineEdit Access="Public" Name="ParrotFilterLineEdit" HorizontalExpand="True"></LineEdit>
+                <cc:HSeparator Margin="4 0" />
+                <Button Name="ParrotMessageApplyFilterButton" Text="{Loc parrot-messages-apply-filter}"></Button>
+                <cc:HSeparator Margin="4 0" />
+                <Button Name="ParrotMessageClearFilterButton" Text="{Loc parrot-messages-clear-filter}"></Button>
+            </BoxContainer>
+
+            <cc:VSeparator Margin="0 4"></cc:VSeparator>
+
+            <!-- actual list -->
+            <ScrollContainer VerticalExpand="True" HorizontalExpand="True" HScrollEnabled="False">
+                <BoxContainer Access="Public" Name="ParrotMessageContainer" Orientation="Vertical" VerticalExpand="True">
+                </BoxContainer>
+            </ScrollContainer>
+        </BoxContainer>
+    </PanelContainer>
+</ui:FancyWindow>

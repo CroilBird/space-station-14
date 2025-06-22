@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.Administration.Logs;
 using Content.Shared.Administration.Logs;
+using Content.Shared.Administration.ParrotMessages;
 using Content.Shared.CCVar;
 using Content.Shared.Construction.Prototypes;
 using Content.Shared.Database;
@@ -366,9 +367,13 @@ namespace Content.Server.Database
 
         #region Parrots
 
+        IAsyncEnumerable<SharedParrotMessage> GetParrotMessages(bool showBlocked, bool showInactive);
+
         IAsyncEnumerable<string> GetRandomParrotMessages(int limit);
 
         Task AddParrotMessage(string message, Guid sourcePlayer, int roundId);
+
+        Task SetParrotMessageBlock(int messageId, bool blocked);
 
         #endregion
     }
@@ -1081,6 +1086,11 @@ namespace Content.Server.Database
 
         #region Parrots
 
+        public IAsyncEnumerable<SharedParrotMessage> GetParrotMessages(bool showBlocked, bool showInactive)
+        {
+            return RunDbCommand(() => _db.GetParrotMessages(showBlocked, showInactive));
+        }
+
         public IAsyncEnumerable<string> GetRandomParrotMessages(int limit)
         {
             return RunDbCommand(() => _db.GetRandomParrotMessages(limit));
@@ -1089,6 +1099,11 @@ namespace Content.Server.Database
         public Task AddParrotMessage(string message, Guid sourcePlayer, int roundId)
         {
             return RunDbCommand(() => _db.AddParrotMessage(message, sourcePlayer, roundId));
+        }
+
+        public Task SetParrotMessageBlock(int messageId, bool blocked)
+        {
+            return RunDbCommand(() => _db.SetParrotMessageBlock(messageId, blocked));
         }
 
         #endregion

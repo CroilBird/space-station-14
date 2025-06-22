@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Content.Server.Database.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteServerDbContext))]
-    [Migration("20250620205735_ParrotMemory")]
-    partial class ParrotMemory
+    [Migration("20250622142828_ParrotMessages")]
+    partial class ParrotMessages
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -664,21 +664,21 @@ namespace Content.Server.Database.Migrations.Sqlite
                     b.ToTable("job", (string)null);
                 });
 
-            modelBuilder.Entity("Content.Server.Database.ParrotMemory", b =>
+            modelBuilder.Entity("Content.Server.Database.ParrotMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasColumnName("parrot_memory_id");
+                        .HasColumnName("parrot_messages_id");
 
                     b.Property<bool>("Block")
                         .HasColumnType("INTEGER")
                         .HasColumnName("block");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("MessageText")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("message");
+                        .HasColumnName("message_text");
 
                     b.Property<int>("Round")
                         .HasColumnType("INTEGER")
@@ -689,9 +689,9 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnName("source_player");
 
                     b.HasKey("Id")
-                        .HasName("PK_parrot_memory");
+                        .HasName("PK_parrot_messages");
 
-                    b.ToTable("parrot_memory", (string)null);
+                    b.ToTable("parrot_messages", (string)null);
                 });
 
             modelBuilder.Entity("Content.Server.Database.PlayTime", b =>

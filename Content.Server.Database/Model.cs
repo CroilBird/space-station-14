@@ -46,7 +46,7 @@ namespace Content.Server.Database
         public DbSet<RoleWhitelist> RoleWhitelists { get; set; } = null!;
         public DbSet<BanTemplate> BanTemplate { get; set; } = null!;
         public DbSet<IPIntelCache> IPIntelCache { get; set; } = null!;
-        public DbSet<ParrotMemory> ParrotMemory { get; set; } = null!;
+        public DbSet<ParrotMessage> ParrotMessages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1333,17 +1333,17 @@ namespace Content.Server.Database
     }
 
     /// <summary>
-    /// Persistent memory for parrots
+    /// Persistent message for parrots
     /// </summary>
     [PrimaryKey(nameof(Id))]
-    public class ParrotMemory
+    public class ParrotMessage
     {
         public int Id { get; set; }
 
         /// <summary>
-        /// Chat message committed to memory
+        /// Text of the message committed to db
         /// </summary>
-        public required string Message { get; set; }
+        public required string MessageText { get; set; }
 
         /// <summary>
         /// Player from which this message originally came

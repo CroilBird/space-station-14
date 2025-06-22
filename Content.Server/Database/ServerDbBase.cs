@@ -1825,37 +1825,37 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
 
         #region Parrots
 
-        public async IAsyncEnumerable<string> GetParrotMessages(int limit)
+        public async IAsyncEnumerable<string> GetRandomParrotMessages(int limit)
         {
             await using var db = await GetDb();
 
             // get count of records
-            var count = db.DbContext.ParrotMemory.Count();
+            var count = db.DbContext.ParrotMessages.Count();
 
             var random = new Random();
 
             for (var i = 0; i < limit; i++)
             {
-                yield return db.DbContext.ParrotMemory
-                    .Select(parrotMemory => parrotMemory.Message)
+                yield return db.DbContext.ParrotMessages
+                    .Select(parrotMessage => parrotMessage.MessageText)
                     .ElementAt(random.Next(0, count));
             }
         }
 
-        public async Task AddParrotMemory(string message, Guid sourcePlayer, int roundId)
+        public async Task AddParrotMessage(string message, Guid sourcePlayer, int roundId)
         {
             await using var db = await GetDb();
 
-            var newMemory = new ParrotMemory()
+            var newMessage = new ParrotMessage()
             {
-                Message = message,
+                MessageText = message,
                 SourcePlayer = sourcePlayer,
                 Round = roundId,
             };
 
-            db.DbContext.ParrotMemory
+            db.DbContext.ParrotMessages
 
-                .Add(newMemory);
+                .Add(newMessage);
             await db.DbContext.SaveChangesAsync();
         }
 

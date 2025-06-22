@@ -699,12 +699,12 @@ namespace Content.Server.Database.Migrations.Postgres
                     b.ToTable("job", (string)null);
                 });
 
-            modelBuilder.Entity("Content.Server.Database.ParrotMemory", b =>
+            modelBuilder.Entity("Content.Server.Database.ParrotMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("parrot_memory_id");
+                        .HasColumnName("parrot_messages_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -712,10 +712,10 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnType("boolean")
                         .HasColumnName("block");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("MessageText")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("message");
+                        .HasColumnName("message_text");
 
                     b.Property<int>("Round")
                         .HasColumnType("integer")
@@ -726,9 +726,9 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnName("source_player");
 
                     b.HasKey("Id")
-                        .HasName("PK_parrot_memory");
+                        .HasName("PK_parrot_messages");
 
-                    b.ToTable("parrot_memory", (string)null);
+                    b.ToTable("parrot_messages", (string)null);
                 });
 
             modelBuilder.Entity("Content.Server.Database.PlayTime", b =>

@@ -367,13 +367,13 @@ namespace Content.Server.Database
 
         #region Parrots
 
-        IAsyncEnumerable<SharedParrotMessage> GetParrotMessages(bool showBlocked, bool showInactive);
+        IAsyncEnumerable<ExtendedParrotMemory> GetParrotMemories(bool blocked);
 
-        IAsyncEnumerable<string> GetRandomParrotMessages(int limit);
+        IAsyncEnumerable<PlayerMessage> GetRandomParrotMemories(int limit);
 
-        Task AddParrotMessage(string message, Guid sourcePlayer, int roundId);
+        Task AddParrotMemory(string message, Guid sourcePlayer, int roundId);
 
-        Task SetParrotMessageBlock(int messageId, bool blocked);
+        Task SetParrotMemoryBlock(int messageId, bool blocked);
 
         #endregion
     }
@@ -1086,24 +1086,24 @@ namespace Content.Server.Database
 
         #region Parrots
 
-        public IAsyncEnumerable<SharedParrotMessage> GetParrotMessages(bool showBlocked, bool showInactive)
+        public IAsyncEnumerable<ExtendedParrotMemory> GetParrotMemories(bool blocked)
         {
-            return RunDbCommand(() => _db.GetParrotMessages(showBlocked, showInactive));
+            return RunDbCommand(() => _db.GetParrotMemories(blocked));
         }
 
-        public IAsyncEnumerable<string> GetRandomParrotMessages(int limit)
+        public IAsyncEnumerable<PlayerMessage> GetRandomParrotMemories(int limit)
         {
-            return RunDbCommand(() => _db.GetRandomParrotMessages(limit));
+            return RunDbCommand(() => _db.GetRandomParrotMemories(limit));
         }
 
-        public Task AddParrotMessage(string message, Guid sourcePlayer, int roundId)
+        public Task AddParrotMemory(string message, Guid sourcePlayer, int roundId)
         {
-            return RunDbCommand(() => _db.AddParrotMessage(message, sourcePlayer, roundId));
+            return RunDbCommand(() => _db.AddParrotMemory(message, sourcePlayer, roundId));
         }
 
-        public Task SetParrotMessageBlock(int messageId, bool blocked)
+        public Task SetParrotMemoryBlock(int messageId, bool blocked)
         {
-            return RunDbCommand(() => _db.SetParrotMessageBlock(messageId, blocked));
+            return RunDbCommand(() => _db.SetParrotMemoryBlock(messageId, blocked));
         }
 
         #endregion

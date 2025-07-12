@@ -699,38 +699,6 @@ namespace Content.Server.Database.Migrations.Postgres
                     b.ToTable("job", (string)null);
                 });
 
-            modelBuilder.Entity("Content.Server.Database.ParrotMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("parrot_messages_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Block")
-                        .HasColumnType("boolean")
-                        .HasColumnName("block");
-
-                    b.Property<string>("MessageText")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("message_text");
-
-                    b.Property<int>("Round")
-                        .HasColumnType("integer")
-                        .HasColumnName("round");
-
-                    b.Property<Guid>("SourcePlayer")
-                        .HasColumnType("uuid")
-                        .HasColumnName("source_player");
-
-                    b.HasKey("Id")
-                        .HasName("PK_parrot_messages");
-
-                    b.ToTable("parrot_messages", (string)null);
-                });
-
             modelBuilder.Entity("Content.Server.Database.PlayTime", b =>
                 {
                     b.Property<int>("Id")
@@ -812,6 +780,46 @@ namespace Content.Server.Database.Migrations.Postgres
                         {
                             t.HasCheckConstraint("LastSeenAddressNotIPv6MappedIPv4", "NOT inet '::ffff:0.0.0.0/96' >>= last_seen_address");
                         });
+                });
+
+            modelBuilder.Entity("Content.Server.Database.PlayerMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("player_message_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Block")
+                        .HasColumnType("boolean")
+                        .HasColumnName("block");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("integer")
+                        .HasColumnName("round");
+
+                    b.Property<Guid>("SourcePlayer")
+                        .HasColumnType("uuid")
+                        .HasColumnName("source_player");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("PK_player_message");
+
+                    b.ToTable("player_message", (string)null);
                 });
 
             modelBuilder.Entity("Content.Server.Database.Preference", b =>

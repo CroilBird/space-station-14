@@ -2,8 +2,11 @@ using Robust.Shared.Serialization;
 
 namespace Content.Shared.Administration.ParrotMessages;
 
+/// <summary>
+/// Parrot memory record that includes additional player information for administration purposes
+/// </summary>
 [Serializable, NetSerializable]
-public sealed record SharedParrotMessage(
+public sealed record ExtendedParrotMemory(
     int MessageId,
     string MessageText,
     int SourceRound,

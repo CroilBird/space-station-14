@@ -6,16 +6,12 @@ namespace Content.Shared.Administration.ParrotMessages;
 [Serializable, NetSerializable]
 public sealed class ParrotMessagesEuiState : EuiStateBase
 {
-    public ParrotMessagesEuiState(bool showBlocked, bool showOld, List<SharedParrotMessage> messages)
+    public ParrotMessagesEuiState(List<ExtendedParrotMemory> messages)
     {
-        ShowBlocked = showBlocked;
-        ShowOld = showOld;
         Messages = messages;
     }
 
-    public bool ShowBlocked { get; }
-    public bool ShowOld { get; }
-    public List<SharedParrotMessage> Messages { get; }
+    public List<ExtendedParrotMemory> Messages { get; }
 }
 
 [Serializable, NetSerializable]
@@ -40,14 +36,10 @@ public sealed class ParrotMessageBlockChangeMsg : EuiMessageBase
 [Serializable, NetSerializable]
 public sealed class ParrotMessageFilterChangeMsg : EuiMessageBase
 {
-    public ParrotMessageFilterChangeMsg(bool showBlocked, bool showOld, string filterString)
+    public ParrotMessageFilterChangeMsg(string filterString)
     {
-        ShowBlocked = showBlocked;
-        ShowOld = showOld;
         FilterString = filterString;
     }
 
-    public bool ShowBlocked { get; }
-    public bool ShowOld { get; }
     public string FilterString { get; }
 }

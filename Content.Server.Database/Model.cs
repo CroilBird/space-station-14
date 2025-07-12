@@ -46,7 +46,7 @@ namespace Content.Server.Database
         public DbSet<RoleWhitelist> RoleWhitelists { get; set; } = null!;
         public DbSet<BanTemplate> BanTemplate { get; set; } = null!;
         public DbSet<IPIntelCache> IPIntelCache { get; set; } = null!;
-        public DbSet<ParrotMessage> ParrotMessages { get; set; } = null!;
+        public DbSet<PlayerMessage> PlayerMessage { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1333,17 +1333,22 @@ namespace Content.Server.Database
     }
 
     /// <summary>
-    /// Persistent message for parrots
+    /// Player message storage
     /// </summary>
     [PrimaryKey(nameof(Id))]
-    public class ParrotMessage
+    public class PlayerMessage
     {
         public int Id { get; set; }
 
         /// <summary>
-        /// Text of the message committed to db
+        /// Actual text of the message
         /// </summary>
-        public required string MessageText { get; set; }
+        public required string Text { get; set; }
+
+        /// <summary>
+        /// Type of the message stored
+        /// </summary>
+        public PlayerMessageType Type { get; set; }
 
         /// <summary>
         /// Player from which this message originally came
@@ -1352,13 +1357,19 @@ namespace Content.Server.Database
         public Guid SourcePlayer { get; set; }
 
         /// <summary>
-        /// The round this message was learned in
+        /// The round this message appeared
         /// </summary>
         [ForeignKey("Round")]
         public int Round { get; set; }
 
         /// <summary>
-        /// Whether to block this entry
+        /// Time at which this player message record was created
+        /// This may be different from when the message appeared
+        /// </summary>
+        public DateTime CreatedAt { get; set; }
+
+        /// <summary>
+        /// Whether to block this entry from being
         /// </summary>
         public bool Block { get; set; }
     }

@@ -1826,31 +1826,30 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
 
         #region Parrots
 
-        public async IAsyncEnumerable<string> GetRandomParrotMessages(int limit)
+        public async IAsyncEnumerable<PlayerMessage> GetRandomParrotMemories(int limit)
         {
             await using var db = await GetDb();
 
             // get count of records
-            var count = db.DbContext.ParrotMessages.Count();
+            var count = db.DbContext.PlayerMessage.Count();
 
             var random = new Random();
 
             for (var i = 0; i < limit; i++)
             {
-                yield return db.DbContext.ParrotMessages
-                    .Select(parrotMessage => parrotMessage.MessageText)
+                var selectedMemory = db.DbContext.PlayerMessage
                     .ElementAt(random.Next(0, count));
+
+                yield return selectedMemory;
             }
         }
 
-        public async IAsyncEnumerable<SharedParrotMessage> GetParrotMessages(bool showBlocked, bool showInactive)
+        public async IAsyncEnumerable<ExtendedParrotMemory> GetParrotMemories(bool blocked)
         {
             await using var db = await GetDb();
 
-            // block filter. If set to true, lambda always returns true. Otherwise it returns true if the message is
-            // not blocked
-            var messageQuery = db.DbContext.ParrotMessages
-                .Where(message => showBlocked || !message.Block);
+            var messageQuery = db.DbContext.PlayerMessage
+                .Where(message => blocked);
 
             var messagePlayers = messageQuery.Select(message => message.SourcePlayer);
 
@@ -1865,50 +1864,43 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
             var joined = messageQuery.Join(playerQuery,
                 message => message.SourcePlayer,
                 player => player.UserId,
-                resultSelector: (message, player) => new
-                {
+                resultSelector: (message, player) => new ExtendedParrotMemory(
                     message.Id,
-                    message.MessageText,
+                    message.Text,
                     message.Round,
-                    SourcePlayerUserName = player.UserName,
-                    SourcePlayerGuid = message.SourcePlayer,
-                    message.Block,
-                });
+                    player.UserName,
+                    message.SourcePlayer,
+                    message.Block
+                ));
 
             await foreach (var result in joined.AsAsyncEnumerable())
             {
-                yield return new SharedParrotMessage(
-                    result.Id,
-                    result.MessageText,
-                    result.Round,
-                    result.SourcePlayerUserName,
-                    result.SourcePlayerGuid,
-                    result.Block
-                );
+                yield return result;
             }
         }
 
-        public async Task AddParrotMessage(string message, Guid sourcePlayer, int roundId)
+        public async Task AddParrotMemory(string message, Guid sourcePlayer, int roundId)
         {
             await using var db = await GetDb();
 
-            var newMessage = new ParrotMessage()
+            var newMessage = new PlayerMessage()
             {
-                MessageText = message,
+                Text = message,
                 SourcePlayer = sourcePlayer,
                 Round = roundId,
+                CreatedAt = DateTime.UtcNow,
             };
 
-            db.DbContext.ParrotMessages
+            db.DbContext.PlayerMessage
                 .Add(newMessage);
             await db.DbContext.SaveChangesAsync();
         }
 
-        public async Task SetParrotMessageBlock(int messageId, bool blocked)
+        public async Task SetParrotMemoryBlock(int messageId, bool blocked)
         {
             await using var db = await GetDb();
 
-            var message = await db.DbContext.ParrotMessages
+            var message = await db.DbContext.PlayerMessage
                 .Where(message => message.Id == messageId)
                 .SingleAsync();
 

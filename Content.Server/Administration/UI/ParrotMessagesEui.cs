@@ -17,14 +17,12 @@ public sealed class ParrotMessagesEui : BaseEui
         IoCManager.InjectDependencies(this);
     }
 
-    private bool _showBlocked;
-    private bool _showOld;
     private string _filterString = string.Empty;
-    private readonly List<SharedParrotMessage> _parrotMessages = [];
+    private readonly List<ExtendedParrotMemory> _parrotMessages = [];
 
     public override EuiStateBase GetNewState()
     {
-        return new ParrotMessagesEuiState(_showBlocked, _showOld, _parrotMessages);
+        return new ParrotMessagesEuiState(_parrotMessages);
     }
 
     public override async void HandleMessage(EuiMessageBase msg)
@@ -45,8 +43,6 @@ public sealed class ParrotMessagesEui : BaseEui
                 break;
 
             case ParrotMessageFilterChangeMsg filterChangeMsg:
-                _showBlocked = filterChangeMsg.ShowBlocked;
-                _showOld = filterChangeMsg.ShowOld;
                 _filterString = filterChangeMsg.FilterString;
                 RefreshParrotMessages();
                 break;
@@ -55,12 +51,12 @@ public sealed class ParrotMessagesEui : BaseEui
 
     private async void SetParrotMessageBlock(int messageId, bool block)
     {
-        await _db.SetParrotMessageBlock(messageId, block);
+        await _db.SetParrotMemoryBlock(messageId, block);
     }
 
     private async void RefreshParrotMessages()
     {
-        var messages = _db.GetParrotMessages(_showBlocked, _showOld);
+        var messages = _db.GetParrotMemories(false);
 
         _parrotMessages.Clear();
 

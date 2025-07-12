@@ -1,3 +1,4 @@
+using Content.Shared.Whitelist;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Server.Animals.Components;
@@ -10,7 +11,7 @@ namespace Content.Server.Animals.Components;
 public sealed partial class ParrotDbMemoryComponent : Component
 {
     /// <summary>
-    /// How often the persistent memory "refreshes", loading new cross-round messages into a parrot memory
+    /// How often the persistent memory cache refreshes, loading new cross-round messages into a parrot memory
     /// </summary>
     [DataField]
     public TimeSpan RefreshInterval = TimeSpan.FromMinutes(10f);

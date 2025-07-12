@@ -661,36 +661,6 @@ namespace Content.Server.Database.Migrations.Sqlite
                     b.ToTable("job", (string)null);
                 });
 
-            modelBuilder.Entity("Content.Server.Database.ParrotMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("parrot_messages_id");
-
-                    b.Property<bool>("Block")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("block");
-
-                    b.Property<string>("MessageText")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("message_text");
-
-                    b.Property<int>("Round")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("round");
-
-                    b.Property<Guid>("SourcePlayer")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("source_player");
-
-                    b.HasKey("Id")
-                        .HasName("PK_parrot_messages");
-
-                    b.ToTable("parrot_messages", (string)null);
-                });
-
             modelBuilder.Entity("Content.Server.Database.PlayTime", b =>
                 {
                     b.Property<int>("Id")
@@ -765,6 +735,44 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("player", (string)null);
+                });
+
+            modelBuilder.Entity("Content.Server.Database.PlayerMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("player_message_id");
+
+                    b.Property<bool>("Block")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("block");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("Round")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("round");
+
+                    b.Property<Guid>("SourcePlayer")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("source_player");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("PK_player_message");
+
+                    b.ToTable("player_message", (string)null);
                 });
 
             modelBuilder.Entity("Content.Server.Database.Preference", b =>

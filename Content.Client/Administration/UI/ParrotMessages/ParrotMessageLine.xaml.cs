@@ -8,10 +8,10 @@ namespace Content.Client.Administration.UI.ParrotMessages;
 public sealed partial class ParrotMessageLine : BoxContainer
 {
 
-    public void SetMessage(SharedParrotMessage message)
+    public void SetMessage(ExtendedParrotMemory memory)
     {
-        ParrotMessageText.Text = message.MessageText;
-        ParrotMessagePlayerButton.Text = message.SourcePlayerUserName;
-        ParrotMessagePlayerButton.Command = $"openahelp {message.SourcePlayerGuid}";
+        ParrotMessageText.Text = memory.MessageText;
+        ParrotMessagePlayerButton.Text = memory.SourcePlayerUserName;
+        ParrotMessagePlayerButton.Command = $"openahelp {memory.SourcePlayerGuid}";
     }
 }

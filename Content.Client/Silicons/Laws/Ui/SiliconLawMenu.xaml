@@ -7,6 +7,12 @@
     <BoxContainer Orientation="Vertical"
                   HorizontalExpand="True"
                   VerticalExpand="True">
+        <BoxContainer Orientation="Horizontal"
+                      HorizontalExpand="True"
+                      Align="Center">
+            <Label Text="{Loc laws-ui-radio-label}"></Label>
+            <OptionButton Access="Public" Name="RadioChannel" MinWidth="150"></OptionButton>
+        </BoxContainer>
         <PanelContainer VerticalExpand="True" Margin="10 10 10 10">
             <PanelContainer.PanelOverride>
                 <gfx:StyleBoxFlat BackgroundColor="#1B1B1E"/>

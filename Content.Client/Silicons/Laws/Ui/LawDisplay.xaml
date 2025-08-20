@@ -13,7 +13,19 @@
                 <Label Text="{Loc laws-ui-state-law}" StyleClasses="StatusFieldTitle"/>
                 <BoxContainer Name="LawAnnouncementButtons" Orientation="Horizontal" HorizontalExpand="True" Margin="0 5 0 0">
                     <Control Margin="5 0 0 0" />
-                    <!-- Buttons are added via C# code-->
+                    <Button
+                        Name="LocalChatButton"
+                        Text="{Loc hud-chatbox-select-channel-Local}"
+                        StyleClasses="LabelSmall"
+                        MinHeight="25"
+                        MinWidth="50">
+                    </Button>
+                    <Button
+                        Name="RadioChatButton"
+                        StyleClasses="LabelSmall"
+                        MinHeight="25"
+                        MinWidth="50">
+                    </Button>
                 </BoxContainer>
             </BoxContainer>
         </BoxContainer>

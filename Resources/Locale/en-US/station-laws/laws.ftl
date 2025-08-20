@@ -106,6 +106,7 @@ law-emag-require-panel = The panel must be open to use the EMAG.
 law-emag-cannot-emag-self = You cannot use the EMAG on yourself.
 
 laws-ui-menu-title = Silicon Laws
+laws-ui-radio-label = Radio channel:
 laws-ui-law-header = Law {$id}
 laws-ui-state-law = State Law:
 

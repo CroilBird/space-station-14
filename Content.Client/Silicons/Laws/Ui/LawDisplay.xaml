@@ -1,6 +1,6 @@
 <Control xmlns="https://spacestation14.io"
          xmlns:customControls="clr-namespace:Content.Client.Administration.UI.CustomControls"
-         Margin="0 0 0 10">
+         Margin="0 0 0 5">
     <PanelContainer VerticalExpand="True" StyleClasses="BackgroundDark">
         <BoxContainer Orientation="Vertical"
                       HorizontalExpand="True"
@@ -9,10 +9,12 @@
             <RichTextLabel Name="LawNumberLabel" StyleClasses="LabelKeyText"/>
             <customControls:HSeparator Margin="0 5 0 5"/>
             <RichTextLabel Name="LawLabel"/>
-            <BoxContainer Name="LawAnnouncementButtons" Orientation="Horizontal" HorizontalExpand="True" Margin="0 5 0 0">
+            <BoxContainer Orientation="Horizontal" HorizontalExpand="True">
                 <Label Text="{Loc laws-ui-state-law}" StyleClasses="StatusFieldTitle"/>
-                <Control Margin="5 0 0 0" />
-                <!-- Buttons are added via C# code-->
+                <BoxContainer Name="LawAnnouncementButtons" Orientation="Horizontal" HorizontalExpand="True" Margin="0 5 0 0">
+                    <Control Margin="5 0 0 0" />
+                    <!-- Buttons are added via C# code-->
+                </BoxContainer>
             </BoxContainer>
         </BoxContainer>
     </PanelContainer>

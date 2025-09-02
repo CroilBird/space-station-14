@@ -297,6 +297,14 @@
   - type: Implanter
     implant: FakeMindShieldImplant
 
+- type: entity
+  id: AiDetectorImplanter
+  name: AI Detector implanter
+  parent: BaseImplantOnlyImplanterSyndi
+  components:
+  - type: Implanter
+    implant: AiDetectorImplant
+
 # Security and Command implanters
 
 - type: entity

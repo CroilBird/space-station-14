@@ -1,0 +1,89 @@
+// how many pixels each tile is
+uniform highp float tile_size = 64;
+// the current render scale
+uniform highp vec2 render_scale = vec2(1.0, 1.0);
+
+// number of tiles (on the grid), spanning:
+// the view of the AI
+uniform highp float in_view_tiles = 21;
+// the buffer around the AI view that players get to warn them they're near
+// the AI vision
+uniform highp float warning_tiles = 10;
+
+// color to use for the tiles that are currently in the AI view
+uniform highp vec4 in_range_color;
+// color to use for the tiles that are in the warning buffer around the AI view
+uniform highp vec4 warning_range_color;
+
+// the size of the screen
+// this'll be the area that displays the world, without the black padding
+uniform highp vec2 screen_size;
+
+// relative position of the AI to the player
+uniform highp vec2 relative_position;
+
+// position of the player
+uniform highp vec2 player_position;
+
+// AI detector overlay texture
+uniform sampler2D overlay_texture;
+
+
+highp vec4 get_range_color(highp vec2 d) {
+    highp float bound = (in_view_tiles / 2.0);
+
+    if (abs(d.x) < bound && abs(d.y) < bound) {
+        return in_range_color;
+    }
+
+    bound += warning_tiles;
+
+    if (abs(d.x) < bound && abs(d.y) < bound) {
+        return warning_range_color;
+    }
+
+    return vec4(0.0);
+}
+
+void fragment() {
+    // this is the position of the player within a tile
+    // e.g. if a player is currently at x=11.2, y=15.5, this will be 0.2, 0.5
+    // this is necessary to align the overlay to the grid
+    highp vec2 player_grid_offset = player_position - round(player_position);
+
+
+    // the position of this UV coordinate on the screen relative to the top-left of the screen
+    highp vec2 screen_pixel_position = UV * screen_size;
+
+
+    // that same position but as a tile position
+    highp vec2 screen_pixel_tile_position = screen_pixel_position / tile_size;
+
+    // adjusted to have the texture correctly align
+    screen_pixel_tile_position += 0.5;
+
+    // fix this to the grid
+    screen_pixel_tile_position += player_grid_offset;
+
+    // tiled_position is the position of a tile a pixel is on in the player's world grid
+    // it is the integral part of the tiled screen position
+    // e.g. (11.3, 55.21) becomes (11.0, 55.0)
+    // tiled_uv is a uv based on tile size. it's the fractional part of the tiled screen position
+    // e.g. (11.3, 55.21) becomes (0.3, 0.21)
+    highp vec2 tiled_position;
+    highp vec2 tiled_uv = abs(modf(screen_pixel_tile_position, tiled_position));
+
+    // the tiled position is relative to the top-left of the screen, since that is the origin
+    // of the UV. We don't want to adjust this earlier because it makes generating the tiled
+    // UV above annoying. so we have to adjust it now
+    // center of the screen
+    highp vec2 screen_center = screen_size / 2.0;
+    // center of the screen adjusted to tile space
+    screen_center /= tile_size;
+
+    // this is the vector of the current screen pixel grid position to the target relative
+    // position to the player. this is a fun thing to comprehend. have fun
+    highp vec2 d = relative_position - tiled_position + screen_center;
+
+    COLOR = texture(overlay_texture, tiled_uv) * get_range_color(d);
+}

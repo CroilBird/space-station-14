@@ -373,6 +373,18 @@
     - type: FakeMindShield # TODO: put the component on the implant and use implant relay events for the status icon
   - type: FakeMindShieldImplant
 
+- type: entity
+  parent: BaseSubdermalImplant
+  id: AiDetectorImplant
+  name: AI Detector implant
+  description: This device uses advanced binary signal sniffers to detect the presence of station AI around the user
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: SubdermalImplant
+    implantAction: AiDetectorToggleAction
+    implantComponents:
+    - type: AiDetector
+
 # Sec and Command implants
 
 - type: entity

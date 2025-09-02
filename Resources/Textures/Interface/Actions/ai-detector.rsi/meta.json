@@ -1,0 +1,17 @@
+{
+    "copyright" : "Made by Crude Oil",
+    "license" : "CC-BY-SA-3.0",
+    "version": 1,
+    "size": {
+        "x": 64,
+        "y": 64
+    },
+    "states": [
+        {
+            "name": "ai-detector-on"
+        },
+        {
+            "name": "ai-detector-off"
+        }
+    ]
+}

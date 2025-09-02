@@ -384,6 +384,21 @@
     - FakeMindShieldImplant
 
 - type: entity
+  parent: BaseAction
+  id: AiDetectorToggleAction
+  name: Toggle AI Detector
+  description: Toggle the AI detector on or off
+  components:
+  - type: Action
+    icon: { sprite: Interface/Actions/ai-detector.rsi, state: ai-detector-off }
+    iconOn: { sprite: Interface/Actions/ai-detector.rsi, state: ai-detector-on }
+    itemIconStyle: NoItem
+    useDelay: 1
+    raiseOnUser: true
+  - type: InstantAction
+    event: !type:AiDetectorOverlayToggleEvent
+
+- type: entity
   parent: BaseToggleAction
   id: ActionToggleParamedicSiren
   name: Toggle Paramedic Siren

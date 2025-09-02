@@ -115,3 +115,8 @@
   id: Hologram
   kind: source
   path: "/Textures/Shaders/hologram.swsl"
+
+- type: shader
+  id: AiDetector
+  kind: source
+  path: "/Textures/Shaders/ai_detector.swsl"

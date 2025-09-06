@@ -294,6 +294,9 @@ public abstract class SharedMagicSystem : EntitySystem
 
         RemoveComponents(ev.Target, ev.ToRemove);
         AddComponents(ev.Target, ev.ToAdd);
+
+        var afterChangeComponentSpellEvent = new AfterChangeComponentSpellEvent();
+        RaiseLocalEvent(ev.Target, ref afterChangeComponentSpellEvent);
     }
     // End Change Component Spells
     #endregion

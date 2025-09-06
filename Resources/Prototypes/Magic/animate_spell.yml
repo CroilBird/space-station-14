@@ -27,6 +27,9 @@
     event: !type:ChangeComponentsSpellEvent
       toAdd:
       - type: Animate
+        fallbackDamage:
+          types:
+            Blunt: 0
       - type: MindContainer
       - type: InputMover
       - type: MobMover
@@ -44,7 +47,7 @@
         angle: 0.0
         damage:
           types:
-            Blunt: 10
+            Blunt: 1
       - type: NpcFactionMember
         factions:
         - Wizard

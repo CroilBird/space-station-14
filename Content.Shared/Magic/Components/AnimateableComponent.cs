@@ -1,4 +1,5 @@
 
+using Content.Shared.Damage;
 using Robust.Shared.GameStates;
 
 namespace Content.Shared.Magic.Components;

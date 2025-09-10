@@ -27,9 +27,6 @@
     event: !type:ChangeComponentsSpellEvent
       toAdd:
       - type: Animate
-        fallbackDamage:
-          types:
-            Blunt: 0
       - type: MindContainer
       - type: InputMover
       - type: MobMover
@@ -38,16 +35,6 @@
         rootTask:
           task: SimpleHostileCompound
       - type: CombatMode
-      - type: MeleeWeapon
-        animation: WeaponArcPunch
-        wideAnimation: WeaponArcPunch
-        altDisarm: false
-        soundHit: /Audio/Weapons/smash.ogg
-        range: 1.2
-        angle: 0.0
-        damage:
-          types:
-            Blunt: 1
       - type: NpcFactionMember
         factions:
         - Wizard

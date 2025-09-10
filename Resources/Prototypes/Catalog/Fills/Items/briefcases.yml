@@ -13,7 +13,7 @@
   parent: BriefcaseSyndie
   suffix: Syndicate, Sniper Bundle
   components:
-  - type: Item
+  - type: Ittype: storage\nem
     size: Ginormous
   - type: Storage
     maxItemSize: Huge

@@ -67,6 +67,19 @@
     - WizardWand
 
 - type: entity
+  id: TheCoolerAnimationStaff
+  parent: AnimationStaff
+  name: staff of cooler animation
+  description: Brings pain to an otherwise enjoyable existence
+  components:
+  - type: LimitedCharges
+    maxCharges: 9999
+  - type: RgbLightController
+  - type: PointLight
+    enabled: true
+    radius: 2
+
+- type: entity
   parent: BaseAction
   id: ActionRgbLight
   components:

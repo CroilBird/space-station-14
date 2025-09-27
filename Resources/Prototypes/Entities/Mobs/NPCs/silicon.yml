@@ -361,6 +361,7 @@
   - type: ComplexInteraction
   - type: Inventory
     templateId: beepsky
+  - type: IntrinsicHandCharger
   - type: DoAfter
   - type: CombatMode
 

@@ -310,6 +310,62 @@
 
 - type: entity
   parent:
+  - MobRobotic # does not inherit from MobSiliconBase because of body funkiness
+  - StripableInventoryBase
+  id: MobBeepsky
+  name: Officer Beepsky
+  description: A little robot, armed with a baton and a cold set of logic.
+  components:
+  - type: Sprite
+    sprite: Mobs/Silicon/Bots/secbot.rsi
+    state: secbot
+  - type: HTN
+    rootTask:
+      task: BeepskyCompound
+  - type: Tag
+    tags:
+    - DoorBumpOpener
+    - SiliconEmotes
+    - Bot
+    - Unimplantable
+  - type: Speech
+    speechVerb: Robotic
+    speechSounds: Pai
+  - type: Vocalizer
+  - type: DatasetVocalizer
+    dataset: BeepskyChirp
+  - type: RadioVocalizer
+    radioAttemptChance: 0.05 # every now and then remind security that Beepsky is still alive
+  - type: IntrinsicRadioReceiver
+  - type: IntrinsicRadioTransmitter
+    channels:
+    - Security
+  - type: ActiveRadio
+    channels:
+    - Security
+  - type: Access
+    tags:
+    - Security
+  - type: Hands
+    hands:
+      hand_baton:
+        location: Left
+        emptyRepresentative: Stunbaton
+      hand_ziptie:
+        location: Right
+        emptyRepresentative: Zipties
+    sortedHands:
+    - hand_baton
+    - hand_ziptie
+    showInHands: false
+  - type: ComplexInteraction
+  - type: Inventory
+    templateId: beepsky
+  - type: DoAfter
+  - type: CombatMode
+
+- type: entity
+  parent:
   - MobSiliconBase
   - ShowMedicalIcons
   - StripableInventoryBase

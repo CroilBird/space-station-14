@@ -1,0 +1,13 @@
+# things beepsky says randomly
+- type: localizedDataset
+  id: BeepskyChirp
+  values:
+    prefix: beepsky-chirp-
+    count: 5
+
+# when arresting
+- type: localizedDataset
+  id: BeepskyArrest
+  values:
+    prefix: beepsky-arrest-
+    count: 5

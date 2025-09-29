@@ -1,5 +1,5 @@
 - type: htnCompound
-  id: BeepskyCompound
+  id: SecBotCompound
   branches:
   - tasks:
     - !type:HTNCompoundTask

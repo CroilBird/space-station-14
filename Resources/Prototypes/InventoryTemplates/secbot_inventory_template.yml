@@ -1,5 +1,5 @@
 - type: inventoryTemplate
-  id: beepsky
+  id: secbot
   slots:
   - name: head
     slotTexture: head

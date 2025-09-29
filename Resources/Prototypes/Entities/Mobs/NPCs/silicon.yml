@@ -351,13 +351,21 @@
       hand_baton:
         location: Left
         emptyRepresentative: Stunbaton
+        whitelist:
+          components:
+          - Stunbaton
       hand_ziptie:
         location: Right
         emptyRepresentative: Zipties
+        whitelist:
+          components:
+          - Handcuff
+
     sortedHands:
     - hand_baton
     - hand_ziptie
     showInHands: false
+    canBeStripped: false
   - type: ComplexInteraction
   - type: Inventory
     templateId: beepsky

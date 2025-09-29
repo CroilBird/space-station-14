@@ -379,6 +379,8 @@
   - type: ActiveRadio
     channels:
     - Security
+  - type: Loadout
+    prototypes: [ SecBotGear ]
 
 - type: entity
   parent:

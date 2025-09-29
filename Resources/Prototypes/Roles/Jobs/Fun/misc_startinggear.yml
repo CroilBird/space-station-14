@@ -194,3 +194,10 @@
   equipment:
     jumpsuit: ClothingUniformJumpsuitColorGrey
     shoes: ClothingShoesColorBlack
+
+# secbot/officer beepsky
+- type: startingGear
+  id: SecBotGear
+  inhand:
+  - Stunbaton
+  - Zipties

@@ -3,4 +3,31 @@
   branches:
   - tasks:
     - !type:HTNCompoundTask
-      task: IdleCompound
+      task: GetSecThreats
+    - !type:HTNCompoundTask
+      task: SecBorgStunTarget
+
+
+- type: htnCompound
+  id: GetSecThreats
+  branches:
+  - preconditions:
+    - !type:KeyNotExistsPrecondition
+      key: Target
+    tasks:
+    - !type:HTNPrimitiveTask
+      operator: !type:UtilityOperator
+        proto: NearbyThreat
+    - !type:HTNPrimitiveTask
+      operator: !type:UtilityOperator
+        proto: NearbyThreatStunned
+
+
+- type: htnCompound
+  id: SecBorgStunTarget
+  branches:
+  - tasks:
+    - !type:HTNPrimitiveTask
+      operator: !type:SpeakDatasetOperator
+        dataset: BeepskyArrest
+

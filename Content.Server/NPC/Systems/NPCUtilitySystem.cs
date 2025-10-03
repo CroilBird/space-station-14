@@ -30,6 +30,8 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 using Content.Shared.Atmos.Components;
 using System.Linq;
+using Content.Server.Cuffs;
+using Content.Shared.Cuffs.Components;
 
 namespace Content.Server.NPC.Systems;
 
@@ -40,6 +42,7 @@ public sealed class NPCUtilitySystem : EntitySystem
 {
     [Dependency] private readonly IPrototypeManager _proto = default!;
     [Dependency] private readonly ContainerSystem _container = default!;
+    [Dependency] private readonly CuffableSystem _cuffable = default!;
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly HandsSystem _hands = default!;
     [Dependency] private readonly InventorySystem _inventory = default!;
@@ -378,6 +381,17 @@ public sealed class NPCUtilitySystem : EntitySystem
                         return 0f;
 
                     return temperature.CurrentTemperature <= con.MinTemp ? 1f : 0f;
+                }
+            case TargetIsCuffedCon con:
+                {
+                    // can't be cuffed? shouldn't happen but return 0
+                    if (!TryComp<CuffableComponent>(targetUid, out var cuffableComponent))
+                        return 1f;
+
+                    if (_cuffable.IsCuffed((targetUid, cuffableComponent)))
+                        return 1f;
+
+                    return 0f;
                 }
             default:
                 throw new NotImplementedException();

@@ -357,6 +357,8 @@
   - type: Inventory
     templateId: secbot
   - type: IntrinsicHandCharger
+    handChargers:
+    - hand_baton
   - type: DoAfter
   - type: CombatMode
 

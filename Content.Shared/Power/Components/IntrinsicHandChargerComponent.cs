@@ -1,4 +1,3 @@
-using Robust.Shared.GameStates;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Shared.Power.Components;
@@ -9,6 +8,12 @@ namespace Content.Shared.Power.Components;
 [RegisterComponent, AutoGenerateComponentPause]
 public sealed partial class IntrinsicHandChargerComponent : Component
 {
+    /// <summary>
+    /// List of hands to try charging items in
+    /// </summary>
+    [DataField]
+    public List<string> HandChargers = [];
+
     /// <summary>
     /// The amount by which to charge batteries, or batteries contained within items
     /// </summary>

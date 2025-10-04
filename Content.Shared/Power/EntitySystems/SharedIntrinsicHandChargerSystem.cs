@@ -32,15 +32,16 @@ public abstract class SharedIntrinsicHandChargerSystem : EntitySystem
     }
 
     /// <summary>
-    /// Attempts to charge all in-hand items
+    /// Attempts to charge in-hand items
     /// </summary>
     private void ChargeInHandItems(Entity<IntrinsicHandChargerComponent> ent)
     {
         if (!TryComp<HandsComponent>(ent, out var hands))
             return;
 
-        foreach (var hand in _hands.EnumerateHands((ent, hands)))
+        foreach (var hand in ent.Comp.HandChargers)
         {
+            // TryGetHeldItem internally checks if the hand exists as well
             if (!_hands.TryGetHeldItem((ent, hands), hand, out var item))
                 continue;
 

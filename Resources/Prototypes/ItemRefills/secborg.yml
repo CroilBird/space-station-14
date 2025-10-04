@@ -1,0 +1,4 @@
+- type: itemRefill
+  id: SecBorgRefill
+  handItems:
+    hand_ziptie: Zipties

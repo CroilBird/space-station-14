@@ -363,6 +363,8 @@
   - type: CombatMode
   - type: Loadout
     prototypes: [ SecBotGear ]
+  - type: InventoryItemRefill
+    itemRefills: SecBorgRefill
 
 - type: entity
   parent:

@@ -384,9 +384,9 @@ public sealed class NPCUtilitySystem : EntitySystem
                 }
             case TargetIsCuffedCon con:
                 {
-                    // can't be cuffed? shouldn't happen but return 0
+                    // can't be cuffed? shouldn't happen but return 1 as they'll never be cuffed
                     if (!TryComp<CuffableComponent>(targetUid, out var cuffableComponent))
-                        return 1f;
+                        return 0f;
 
                     if (_cuffable.IsCuffed((targetUid, cuffableComponent)))
                         return 1f;

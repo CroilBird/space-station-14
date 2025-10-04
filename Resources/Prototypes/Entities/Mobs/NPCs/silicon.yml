@@ -361,6 +361,8 @@
     - hand_baton
   - type: DoAfter
   - type: CombatMode
+  - type: Loadout
+    prototypes: [ SecBotGear ]
 
 - type: entity
   parent:
@@ -381,8 +383,6 @@
   - type: ActiveRadio
     channels:
     - Security
-  - type: Loadout
-    prototypes: [ SecBotGear ]
 
 - type: entity
   parent:

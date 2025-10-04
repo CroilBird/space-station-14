@@ -193,32 +193,17 @@
       components:
         - type: SecurityThreat
   considerations:
-    - !type:TargetIsAliveCon
-      curve: !type:BoolCurve
+    - !type:TargetDistanceCon
+      curve: !type:PresetCurve
+        preset: TargetDistance
     - !type:TargetAccessibleCon
       curve: !type:BoolCurve
     - !type:TargetInLOSOrCurrentCon
       curve: !type:BoolCurve
     - !type:TargetIsCuffedCon
       curve: !type:InverseBoolCurve
-
-- type: utilityQuery
-  id: NearbySecurityThreatActive
-  query:
-  - !type:ComponentQuery
-    components:
-    - type: SecurityThreat
-  considerations:
-  - !type:TargetIsAliveCon
-    curve: !type:BoolCurve
-  - !type:TargetAccessibleCon
-    curve: !type:BoolCurve
-  - !type:TargetInLOSOrCurrentCon
-    curve: !type:BoolCurve
-  - !type:TargetIsCuffedCon
-    curve: !type:InverseBoolCurve
-  - !type:TargetIsStunnedCon
-    curve: !type:InverseBoolCurve
+    - !type:TargetIsAliveCon
+      curve: !type:BoolCurve
 
 - type: utilityQuery
   id: NearbyPuddles

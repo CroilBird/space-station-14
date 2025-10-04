@@ -2,18 +2,11 @@
   id: SecBotCompound
   branches:
     - tasks:
-      - !type:HTNCompoundTask
-        task: GetSecThreats
+      - !type:HTNPrimitiveTask
+        operator: !type:UtilityOperator
+          proto: NearbySecurityThreat
       - !type:HTNCompoundTask
         task: SecBorgStunCuffTarget
-
-- type: htnCompound
-  id: GetSecThreats
-  branches:
-  - tasks:
-    - !type:HTNPrimitiveTask
-      operator: !type:UtilityOperator
-        proto: NearbySecurityThreat
 
 - type: htnCompound
   id: SecBorgStunCuffTarget
@@ -58,19 +51,8 @@
         rangeKey: MeleeRange
 
     - !type:HTNPrimitiveTask
-      operator: !type:MeleeOperator
+      operator: !type:StunOperator
         targetKey: Target
-      preconditions:
-      - !type:KeyExistsPrecondition
-        key: Target
-      - !type:TargetInRangePrecondition
-        targetKey: Target
-        rangeKey: MeleeRange
-      services:
-        - !type:UtilityService
-          id: SecurityThreatActive
-          proto: NearbySecurityThreatActive
-          key: Target
 
 - type: htnCompound
   id: SecBorgCuffTarget

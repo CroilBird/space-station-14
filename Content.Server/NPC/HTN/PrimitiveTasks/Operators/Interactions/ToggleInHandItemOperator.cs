@@ -16,7 +16,7 @@ public sealed partial class ToggleInHandItemOperator : HTNOperator
     /// The state to toggle the active hand item to. True = on, False = off
     /// </summary>
     [DataField]
-    public bool NewState;
+    public bool Toggle;
 
     public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
     {
@@ -37,10 +37,10 @@ public sealed partial class ToggleInHandItemOperator : HTNOperator
         // return if already at the desired state
         // TrySetActive down below will return false if we try to turn on something
         // that is already on and vice versa
-        if (toggleSystem.IsActivated(handItem.Value) == NewState)
+        if (toggleSystem.IsActivated(handItem.Value) == Toggle)
             return HTNOperatorStatus.Finished;
 
-        toggleSystem.TrySetActive(handItem.Value, NewState, owner);
+        toggleSystem.TrySetActive(handItem.Value, Toggle, owner);
 
         return HTNOperatorStatus.Finished;
     }

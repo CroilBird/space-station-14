@@ -187,7 +187,7 @@
       curve: !type:BoolCurve
 
 - type: utilityQuery
-  id: NearbyThreat
+  id: NearbySecurityThreat
   query:
     - !type:ComponentQuery
       components:
@@ -199,11 +199,11 @@
       curve: !type:BoolCurve
     - !type:TargetInLOSOrCurrentCon
       curve: !type:BoolCurve
-    - !type:TargetIsStunnedCon
+    - !type:TargetIsCuffedCon
       curve: !type:InverseBoolCurve
 
 - type: utilityQuery
-  id: NearbyThreatStunned
+  id: NearbySecurityThreatActive
   query:
   - !type:ComponentQuery
     components:
@@ -215,8 +215,10 @@
     curve: !type:BoolCurve
   - !type:TargetInLOSOrCurrentCon
     curve: !type:BoolCurve
+  - !type:TargetIsCuffedCon
+    curve: !type:InverseBoolCurve
   - !type:TargetIsStunnedCon
-    curve: !type:BoolCurve
+    curve: !type:InverseBoolCurve
 
 - type: utilityQuery
   id: NearbyPuddles

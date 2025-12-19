@@ -328,6 +328,17 @@
     - SiliconEmotes
     - Bot
     - Unimplantable
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 120
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+      - !type:PlaySoundBehavior
+        sound:
+          collection: MetalBreak
   - type: Speech
     speechVerb: Robotic
     speechSounds: Pai
@@ -366,6 +377,7 @@
   - type: InventoryItemRefill
     itemRefills: SecBorgRefill
   - type: SecurityThreatSeeker
+  - type: Emag
 
 - type: entity
   parent:

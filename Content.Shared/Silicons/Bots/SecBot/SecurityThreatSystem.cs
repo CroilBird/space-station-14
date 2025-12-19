@@ -1,8 +1,8 @@
 using Content.Shared.Contraband;
+using Content.Shared.Emag.Systems;
 using Content.Shared.Hands;
 using Content.Shared.Hands.Components;
 using Content.Shared.Hands.EntitySystems;
-using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Silicons.Bots.SecBot;
 
@@ -10,6 +10,7 @@ public sealed class SecurityThreatSystem : EntitySystem
 {
     [Dependency] private readonly SharedHandsSystem _hands = default!;
     [Dependency] private readonly ContrabandSystem _contraband = default!;
+    [Dependency] private readonly EmagSystem _emag = default!;
 
     public override void Initialize()
     {
@@ -17,6 +18,19 @@ public sealed class SecurityThreatSystem : EntitySystem
 
         SubscribeLocalEvent<PotentialSecurityThreatComponent, DidEquipHandEvent>(OnDidEquipHand);
         SubscribeLocalEvent<PotentialSecurityThreatComponent, DidUnequipHandEvent>(OnDidUnequipHand);
+
+        SubscribeLocalEvent<SecurityThreatSeekerComponent, GotEmaggedEvent>(Handler);
+    }
+
+    private void Handler(Entity<SecurityThreatSeekerComponent> ent, ref GotEmaggedEvent args)
+    {
+        if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
+            return;
+
+        if (_emag.CheckFlag(ent, EmagType.Interaction))
+            return;
+
+        args.Handled = true;
     }
 
     private void OnDidEquipHand(Entity<PotentialSecurityThreatComponent> potentialThreat, ref DidEquipHandEvent args)

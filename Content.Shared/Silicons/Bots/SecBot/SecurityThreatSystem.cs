@@ -1,27 +1,80 @@
-using Content.Shared.Access.Systems;
 using Content.Shared.Contraband;
 using Content.Shared.Hands;
 using Content.Shared.Hands.Components;
-using Content.Shared.Inventory;
+using Content.Shared.Hands.EntitySystems;
+using Robust.Shared.Prototypes;
 
-namespace Content.Shared.Silicons.Bots;
+namespace Content.Shared.Silicons.Bots.SecBot;
 
 public sealed class SecurityThreatSystem : EntitySystem
 {
-    public int GetThreat(Entity<SecurityThreatComponent?> potentialThreat)
-    {
-        if (!Resolve(potentialThreat, ref potentialThreat.Comp))
-            return 0;
+    [Dependency] private readonly SharedHandsSystem _hands = default!;
+    [Dependency] private readonly ContrabandSystem _contraband = default!;
 
-        return 10;
+    public override void Initialize()
+    {
+        base.Initialize();
+
+        SubscribeLocalEvent<PotentialSecurityThreatComponent, DidEquipHandEvent>(OnDidEquipHand);
+        SubscribeLocalEvent<PotentialSecurityThreatComponent, DidUnequipHandEvent>(OnDidUnequipHand);
     }
 
-    public bool IsThreat(Entity<SecurityThreatSeekerComponent?> threatSeeker,
-        EntityUid potentialThreat)
+    private void OnDidEquipHand(Entity<PotentialSecurityThreatComponent> potentialThreat, ref DidEquipHandEvent args)
     {
-        if (!Resolve(threatSeeker, ref threatSeeker.Comp))
+        UpdateThreat(potentialThreat);
+    }
+
+    private void OnDidUnequipHand(Entity<PotentialSecurityThreatComponent> potentialThreat, ref DidUnequipHandEvent args)
+    {
+        UpdateThreat(potentialThreat);
+    }
+
+    /// <summary>
+    /// Returns true if a potential threat is an active threat, which is the case when it exceeds the threat seeker's
+    /// threat threshold.
+    /// </summary>
+    public bool IsActiveThreat(Entity<SecurityThreatSeekerComponent?> threatSeeker,
+        Entity<PotentialSecurityThreatComponent?> potentialThreat)
+    {
+        if (!Resolve(threatSeeker, ref threatSeeker.Comp) || !Resolve(potentialThreat, ref potentialThreat.Comp))
             return false;
 
-        return GetThreat(potentialThreat) >= threatSeeker.Comp.ThreatThreshold;
+        return potentialThreat.Comp.ThreatLevel >= threatSeeker.Comp.ThreatThreshold;
+    }
+
+    private void UpdateThreat(Entity<PotentialSecurityThreatComponent> potentialThreat)
+    {
+        var newThreat = 0;
+
+        newThreat += GetContrabandThreat(potentialThreat);
+
+        potentialThreat.Comp.ThreatLevel = newThreat;
+    }
+
+    private int GetContrabandThreat(Entity<PotentialSecurityThreatComponent> potentialThreat)
+    {
+        if (!HasComp<HandsComponent>(potentialThreat))
+            return 0;
+
+        var sum = 0;
+
+        // enumerate over items in hand
+        foreach (var item in _hands.EnumerateHeld(potentialThreat.Owner))
+        {
+            if (!TryComp<ContrabandComponent>(item, out var contrabandComponent))
+                continue;
+
+            if (_contraband.UserCanCarryItem(potentialThreat.Owner, contrabandComponent))
+                continue;
+
+            // at this point the item is not legal for the user to carry
+
+            // only increase the threat level if the category of the contraband is tracked in thePotentialSecurityThreatComponent
+            if (potentialThreat.Comp.ContrabandThreatModifiers.TryGetValue(contrabandComponent.Severity.Id, out var modifier))
+                sum += modifier;
+
+        }
+
+        return sum;
     }
 }

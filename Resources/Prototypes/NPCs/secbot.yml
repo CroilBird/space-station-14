@@ -77,3 +77,7 @@
         rangeKey: InteractRange
       operator: !type:InteractWithOperator
         targetKey: Target
+
+    - !type:HTNPrimitiveTask
+      operator: !type:RemoveBlackboardOperator
+        key: Target

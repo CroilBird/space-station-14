@@ -191,7 +191,7 @@
   query:
     - !type:ComponentQuery
       components:
-        - type: SecurityThreat
+        - type: PotentialSecurityThreat
   considerations:
     - !type:TargetDistanceCon
       curve: !type:PresetCurve

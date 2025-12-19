@@ -9,7 +9,7 @@ using Content.Shared.Stunnable;
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Combat.Melee;
 
 /// <summary>
-/// Attacks the specified key in melee combat.
+/// Stuns the specified target. This is very similar to MeleeOperator except it cancels out if the victim is stunned
 /// </summary>
 public sealed partial class StunOperator : HTNOperator, IHtnConditionalShutdown
 {
@@ -27,8 +27,6 @@ public sealed partial class StunOperator : HTNOperator, IHtnConditionalShutdown
     [DataField("targetKey", required: true)]
     public string TargetKey = default!;
 
-    // Like movement we add a component and pass it off to the dedicated system.
-
     public override void Startup(NPCBlackboard blackboard)
     {
         base.Startup(blackboard);
@@ -40,7 +38,6 @@ public sealed partial class StunOperator : HTNOperator, IHtnConditionalShutdown
     public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
-        // Don't attack if they're already as wounded as we want them.
         if (!blackboard.TryGetValue<EntityUid>(TargetKey, out var target, _entManager))
         {
             return (false, null);
@@ -59,7 +56,7 @@ public sealed partial class StunOperator : HTNOperator, IHtnConditionalShutdown
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         _entManager.System<SharedCombatModeSystem>().SetInCombatMode(owner, false);
         _entManager.RemoveComponent<NPCMeleeCombatComponent>(owner);
-        blackboard.Remove<EntityUid>(TargetKey);
+        // blackboard.Remove<EntityUid>(TargetKey);
     }
 
     public override void TaskShutdown(NPCBlackboard blackboard, HTNOperatorStatus status)

@@ -32,7 +32,7 @@ using Content.Shared.Damage.Components;
 using Content.Shared.Temperature.Components;
 using Content.Server.Cuffs;
 using Content.Shared.Cuffs.Components;
-using Content.Shared.Silicons.Bots;
+using Content.Shared.Silicons.Bots.SecBot;
 
 namespace Content.Server.NPC.Systems;
 
@@ -397,7 +397,12 @@ public sealed class NPCUtilitySystem : EntitySystem
                 }
             case TargetIsThreatCon con:
             {
-                if (!_securityThreat.IsThreat(owner, targetUid))
+                // maintain the current target if we already have one
+                if (blackboard.TryGetValue<EntityUid>("Target", out var currentTarget, EntityManager) &&
+                    currentTarget == targetUid)
+                    return 1f;
+
+                if (!_securityThreat.IsActiveThreat(owner, targetUid))
                     return 0f;
 
                 return 1f;

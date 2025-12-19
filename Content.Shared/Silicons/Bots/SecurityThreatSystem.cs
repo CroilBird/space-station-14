@@ -1,28 +1,27 @@
 using Content.Shared.Access.Systems;
+using Content.Shared.Contraband;
+using Content.Shared.Hands;
+using Content.Shared.Hands.Components;
 using Content.Shared.Inventory;
 
 namespace Content.Shared.Silicons.Bots;
 
 public sealed class SecurityThreatSystem : EntitySystem
 {
-    [Dependency] private readonly SharedAccessSystem _access = default!;
-    [Dependency] private readonly InventorySystem _inventory = default!;
-
-
-    public override void Initialize()
+    public int GetThreat(Entity<SecurityThreatComponent?> potentialThreat)
     {
-        base.Initialize();
+        if (!Resolve(potentialThreat, ref potentialThreat.Comp))
+            return 0;
 
-
+        return 10;
     }
 
-
     public bool IsThreat(Entity<SecurityThreatSeekerComponent?> threatSeeker,
-        Entity<SecurityThreatComponent?> potentialThreat)
+        EntityUid potentialThreat)
     {
-        if (!Resolve(threatSeeker.Owner, ref threatSeeker.Comp) || !Resolve(potentialThreat.Owner, ref potentialThreat.Comp))
+        if (!Resolve(threatSeeker, ref threatSeeker.Comp))
             return false;
 
-        return potentialThreat.Comp.CurrentThreat >= threatSeeker.Comp.ThreatThreshold;
+        return GetThreat(potentialThreat) >= threatSeeker.Comp.ThreatThreshold;
     }
 }

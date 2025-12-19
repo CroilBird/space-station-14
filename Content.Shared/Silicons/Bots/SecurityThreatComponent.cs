@@ -8,23 +8,8 @@ namespace Content.Shared.Silicons.Bots;
 public sealed partial class SecurityThreatComponent : Component
 {
     /// <summary>
-    /// The current threat of an entity
+    /// Sources of threat on this entity
     /// </summary>
     [DataField, AutoNetworkedField]
-    public int CurrentThreat;
-
-    [DataField, AutoNetworkedField]
-    public int MinorContrabandThreat = 1;
-
-    [DataField, AutoNetworkedField]
-    public int MajorContrabandThreat = 3;
-
-    [DataField, AutoNetworkedField]
-    public int HighlyIllegalContrabandThreat = 5;
-
-    [DataField, AutoNetworkedField]
-    public int AgentIdThreat = -10;
-
-    [DataField, AutoNetworkedField]
-    public int SecBotEmaggedThreat = 10;
+    public Dictionary<int, SecurityThreatSourcePrototype> ThreatSources;
 }

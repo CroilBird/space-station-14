@@ -1,33 +1,33 @@
 using System.Diagnostics.CodeAnalysis;
-using Content.Server.Power.Components;
-using Content.Server.PowerCell;
+using Content.Shared.PowerCell;
 using Content.Shared.Power.Components;
 using Content.Shared.Power.EntitySystems;
+using Content.Server.Power;
 
 namespace Content.Server.Power.EntitySystems;
 
 public sealed class IntrinsicHandChargerSystem : SharedIntrinsicHandChargerSystem
 {
-    [Dependency] private readonly BatterySystem _battery = default!;
+    [Dependency] private readonly PredictedBatterySystem _battery = default!;
     [Dependency] private readonly PowerCellSystem _powerCell = default!;
 
-    private bool TryGetBattery(EntityUid item, [NotNullWhen(true)] out Entity<BatteryComponent>? batteryItem)
+    private bool TryGetBattery(EntityUid item, [NotNullWhen(true)]  out PredictedBatteryComponent? batteryItem)
     {
         batteryItem = null;
 
         // case where the item itself is a battery or has an internal one
         // e.g. stun batons, disablers and, well, batteries
-        if (TryComp<BatteryComponent>(item, out var internalBattery))
+        if (TryComp<PredictedBatteryComponent>(item, out var internalBattery))
         {
-            batteryItem = (item, internalBattery);
+            batteryItem = internalBattery;
             return true;
         }
 
         // try to get a battery from a potential cell slot
-        if (!_powerCell.TryGetBatteryFromSlot(item, out var cellSlotItem, out var cellSlotBattery))
+        if (!_powerCell.TryGetBatteryFromSlot(item, out var cellSlotBattery))
             return false;
 
-        batteryItem = (cellSlotItem.Value, cellSlotBattery);
+        batteryItem = cellSlotBattery;
 
         return true;
     }
@@ -37,13 +37,13 @@ public sealed class IntrinsicHandChargerSystem : SharedIntrinsicHandChargerSyste
         if (!TryGetBattery(item, out var battery))
             return;
 
-        if (_battery.IsFull(battery.Value, battery))
+        if (_battery.IsFull(item))
             return;
 
         var toCharge = handCharger.BatteryChargeAmount;
-        if (battery.Value.Comp.CurrentCharge + toCharge > battery.Value.Comp.MaxCharge)
-            toCharge = battery.Value.Comp.MaxCharge - battery.Value.Comp.CurrentCharge;
+        if (battery.LastCharge + toCharge > battery.MaxCharge)
+            toCharge = battery.MaxCharge - battery.LastCharge;
 
-        _battery.ChangeCharge(item, toCharge, battery);
+        _battery.ChangeCharge(item, toCharge);
     }
 }

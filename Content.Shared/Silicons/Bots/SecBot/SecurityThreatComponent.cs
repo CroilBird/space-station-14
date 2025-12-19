@@ -1,4 +1,4 @@
-namespace Content.Shared.Silicons.Bots;
+namespace Content.Shared.Silicons.Bots.SecBot;
 
 /// <summary>
 /// Component to indicate some form of a security threat

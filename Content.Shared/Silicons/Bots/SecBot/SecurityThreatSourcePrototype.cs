@@ -1,6 +1,6 @@
 using Robust.Shared.Prototypes;
 
-namespace Content.Shared.Silicons.Bots;
+namespace Content.Shared.Silicons.Bots.SecBot;
 
 [Prototype]
 public sealed class SecurityThreatSourcePrototype : IPrototype

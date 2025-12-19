@@ -204,6 +204,8 @@
       curve: !type:InverseBoolCurve
     - !type:TargetIsAliveCon
       curve: !type:BoolCurve
+    - !type:TargetIsThreatCon
+      curve: !type:BoolCurve
 
 - type: utilityQuery
   id: NearbyPuddles

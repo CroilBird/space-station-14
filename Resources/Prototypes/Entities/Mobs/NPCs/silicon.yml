@@ -365,6 +365,7 @@
     prototypes: [ SecBotGear ]
   - type: InventoryItemRefill
     itemRefills: SecBorgRefill
+  - type: SecurityThreatSeeker
 
 - type: entity
   parent:

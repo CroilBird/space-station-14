@@ -12,4 +12,19 @@ public sealed partial class SecurityThreatComponent : Component
     /// </summary>
     [DataField, AutoNetworkedField]
     public int CurrentThreat;
+
+    [DataField, AutoNetworkedField]
+    public int MinorContrabandThreat = 1;
+
+    [DataField, AutoNetworkedField]
+    public int MajorContrabandThreat = 3;
+
+    [DataField, AutoNetworkedField]
+    public int HighlyIllegalContrabandThreat = 5;
+
+    [DataField, AutoNetworkedField]
+    public int AgentIdThreat = -10;
+
+    [DataField, AutoNetworkedField]
+    public int SecBotEmaggedThreat = 10;
 }

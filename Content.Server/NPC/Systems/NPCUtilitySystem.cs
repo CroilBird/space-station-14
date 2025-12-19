@@ -32,6 +32,7 @@ using Content.Shared.Damage.Components;
 using Content.Shared.Temperature.Components;
 using Content.Server.Cuffs;
 using Content.Shared.Cuffs.Components;
+using Content.Shared.Silicons.Bots;
 
 namespace Content.Server.NPC.Systems;
 
@@ -57,6 +58,7 @@ public sealed class NPCUtilitySystem : EntitySystem
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
     [Dependency] private readonly MobThresholdSystem _thresholdSystem = default!;
     [Dependency] private readonly TurretTargetSettingsSystem _turretTargetSettings = default!;
+    [Dependency] private readonly SecurityThreatSystem _securityThreat = default!;
 
     private EntityQuery<PuddleComponent> _puddleQuery;
     private EntityQuery<TransformComponent> _xformQuery;
@@ -393,6 +395,13 @@ public sealed class NPCUtilitySystem : EntitySystem
 
                     return 0f;
                 }
+            case TargetIsThreatCon con:
+            {
+                if (!_securityThreat.IsThreat(owner, targetUid))
+                    return 0f;
+
+                return 1f;
+            }
             default:
                 throw new NotImplementedException();
         }

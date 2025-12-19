@@ -15,6 +15,9 @@ public sealed partial class PotentialSecurityThreatComponent : Component
     [DataField, AutoNetworkedField]
     public int ThreatLevel = 0;
 
+    /// <summary>
+    /// Modifiers to apply to threat level per contraband severity
+    /// </summary>
     [DataField, AutoNetworkedField]
     public Dictionary<EntProtoId, int> ContrabandThreatModifiers = new()
     {

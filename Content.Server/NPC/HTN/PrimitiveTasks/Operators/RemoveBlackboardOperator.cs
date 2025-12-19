@@ -3,6 +3,9 @@ using Content.Shared.Chat;
 
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators;
 
+/// <summary>
+/// Removes a specified key from the blackboard
+/// </summary>
 public sealed partial class RemoveBlackboardOperator : HTNOperator
 {
     [DataField(required: true)]

@@ -3,8 +3,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.Silicons.Bots.SecBot;
 
 /// <summary>
-/// Component to indicate some form of a security threat
-/// Used by security bots to determine who to stuncuff
+/// Component for things that respond to entities with a PotentialSecurityThreatComponent
 /// </summary>
 [RegisterComponent, AutoGenerateComponentState]
 public sealed partial class SecurityThreatSeekerComponent : Component

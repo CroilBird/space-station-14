@@ -8,7 +8,7 @@ using Robust.Shared.Random;
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators;
 
 /// <summary>
-/// Makes this entity speak from a specified dataset
+/// Makes this entity speak a random line from a specified dataset
 /// </summary>
 public sealed partial class SpeakDatasetOperator : HTNOperator
 {

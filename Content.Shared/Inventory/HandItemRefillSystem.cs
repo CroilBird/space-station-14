@@ -6,6 +6,11 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Inventory;
 
+/// <summary>
+/// System that handles refilling hand inventory items, used in conjunction with <see cref="InventoryItemRefillComponent"/>
+/// Currently this just subscribes to ondropped, which happens to cover any case where an item totally disappears from a hand.
+/// But this does not cover cases where an item is used and changes state or whatever while remaining in-hand.
+/// </summary>
 public sealed class HandItemRefillSystem : EntitySystem
 {
     [Dependency] private readonly IPrototypeManager _prototype = default!;

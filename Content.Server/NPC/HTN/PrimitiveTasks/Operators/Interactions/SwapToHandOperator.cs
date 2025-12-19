@@ -43,9 +43,11 @@ public sealed partial class SwapToHandOperator : HTNOperator
         if (!_entManager.TryGetComponent<HandsComponent>(owner, out var _))
             return HTNOperatorStatus.Failed;
 
+        // cancel out if the hand is already active
         if (handSystem.GetActiveHand(owner) == Hand)
             return HTNOperatorStatus.Finished;
 
+        // actually try setting the active hand
         if (!handSystem.TrySetActiveHand(owner, Hand))
             return HTNOperatorStatus.Failed;
 

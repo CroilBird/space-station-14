@@ -56,16 +56,22 @@ public sealed class SecurityThreatSystem : EntitySystem
         return potentialThreat.Comp.ThreatLevel >= threatSeeker.Comp.ThreatThreshold;
     }
 
+    /// <summary>
+    /// Update the threat level of a given entity
+    /// </summary>
     private void UpdateThreat(Entity<PotentialSecurityThreatComponent> potentialThreat)
     {
         var newThreat = 0;
 
-        newThreat += GetContrabandThreat(potentialThreat);
+        newThreat += GetHeldContrabandThreatLevel(potentialThreat);
 
         potentialThreat.Comp.ThreatLevel = newThreat;
     }
 
-    private int GetContrabandThreat(Entity<PotentialSecurityThreatComponent> potentialThreat)
+    /// <summary>
+    /// Get the total contraband threat level for held contraband
+    /// </summary>
+    private int GetHeldContrabandThreatLevel(Entity<PotentialSecurityThreatComponent> potentialThreat)
     {
         if (!HasComp<HandsComponent>(potentialThreat))
             return 0;

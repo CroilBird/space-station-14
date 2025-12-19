@@ -10,6 +10,7 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Combat.Melee;
 
 /// <summary>
 /// Stuns the specified target. This is very similar to MeleeOperator except it cancels out if the victim is stunned
+/// This also doesn't remove the target, so it can get cuffed later.
 /// </summary>
 public sealed partial class StunOperator : HTNOperator, IHtnConditionalShutdown
 {
@@ -56,7 +57,6 @@ public sealed partial class StunOperator : HTNOperator, IHtnConditionalShutdown
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         _entManager.System<SharedCombatModeSystem>().SetInCombatMode(owner, false);
         _entManager.RemoveComponent<NPCMeleeCombatComponent>(owner);
-        // blackboard.Remove<EntityUid>(TargetKey);
     }
 
     public override void TaskShutdown(NPCBlackboard blackboard, HTNOperatorStatus status)

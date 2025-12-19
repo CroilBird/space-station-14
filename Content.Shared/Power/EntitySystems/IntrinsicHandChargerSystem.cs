@@ -1,17 +1,57 @@
+using System.Diagnostics.CodeAnalysis;
 using Content.Shared.Charges.Components;
 using Content.Shared.Charges.Systems;
 using Content.Shared.Hands.Components;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Power.Components;
+using Content.Shared.PowerCell;
 using Robust.Shared.Timing;
 
 namespace Content.Shared.Power.EntitySystems;
 
-public abstract class SharedIntrinsicHandChargerSystem : EntitySystem
+public class IntrinsicHandChargerSystem : EntitySystem
 {
     [Dependency] private readonly IGameTiming _gameTiming = default!;
     [Dependency] private readonly SharedChargesSystem _charges = default!;
     [Dependency] private readonly SharedHandsSystem _hands = default!;
+    [Dependency] private readonly PredictedBatterySystem _battery = default!;
+    [Dependency] private readonly PowerCellSystem _powerCell = default!;
+
+    private bool TryGetBattery(EntityUid item, [NotNullWhen(true)]  out PredictedBatteryComponent? batteryItem)
+    {
+        batteryItem = null;
+
+        // case where the item itself is a battery or has an internal one
+        // e.g. stun batons, disablers and, well, batteries
+        if (TryComp<PredictedBatteryComponent>(item, out var internalBattery))
+        {
+            batteryItem = internalBattery;
+            return true;
+        }
+
+        // try to get a battery from a potential cell slot
+        if (!_powerCell.TryGetBatteryFromSlot(item, out var cellSlotBattery))
+            return false;
+
+        batteryItem = cellSlotBattery;
+
+        return true;
+    }
+
+    private void ChargeItemBatteries(EntityUid item, IntrinsicHandChargerComponent handCharger)
+    {
+        if (!TryGetBattery(item, out var battery))
+            return;
+
+        if (_battery.IsFull(item))
+            return;
+
+        var toCharge = handCharger.BatteryChargeAmount;
+        if (battery.LastCharge + toCharge > battery.MaxCharge)
+            toCharge = battery.MaxCharge - battery.LastCharge;
+
+        _battery.ChangeCharge(item, toCharge);
+    }
 
     public override void Update(float frameTime)
     {
@@ -59,14 +99,5 @@ public abstract class SharedIntrinsicHandChargerSystem : EntitySystem
             return;
 
         _charges.AddCharges((item, charges), handChargerComponent.LimitedChargesAddAmount);
-    }
-
-    /// <summary>
-    /// Adds charge to batteries or batteries inside of items
-    /// TODO: move to shared entirely once batteries are predicted
-    /// </summary>
-    protected virtual void ChargeItemBatteries(EntityUid item, IntrinsicHandChargerComponent handCharger)
-    {
-
     }
 }

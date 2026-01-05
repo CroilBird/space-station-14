@@ -9,7 +9,7 @@ namespace Content.Shared.Inventory.Prototypes;
 public sealed partial class ItemRefillPrototype : IPrototype
 {
     [IdDataField]
-    public string ID { get; } = string.Empty;
+    public string ID { get; private set; } = string.Empty;
 
     /// <summary>
     /// Items to refill in hands. Key is the hand id, value is the prototype ID of the item to fill

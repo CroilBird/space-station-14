@@ -14,16 +14,16 @@ public class IntrinsicHandChargerSystem : EntitySystem
     [Dependency] private readonly IGameTiming _gameTiming = default!;
     [Dependency] private readonly SharedChargesSystem _charges = default!;
     [Dependency] private readonly SharedHandsSystem _hands = default!;
-    [Dependency] private readonly PredictedBatterySystem _battery = default!;
+    [Dependency] private readonly SharedBatterySystem _battery = default!;
     [Dependency] private readonly PowerCellSystem _powerCell = default!;
 
-    private bool TryGetBattery(EntityUid item, [NotNullWhen(true)]  out PredictedBatteryComponent? batteryItem)
+    private bool TryGetBattery(EntityUid item, [NotNullWhen(true)]  out BatteryComponent? batteryItem)
     {
         batteryItem = null;
 
         // case where the item itself is a battery or has an internal one
         // e.g. stun batons, disablers and, well, batteries
-        if (TryComp<PredictedBatteryComponent>(item, out var internalBattery))
+        if (TryComp<BatteryComponent>(item, out var internalBattery))
         {
             batteryItem = internalBattery;
             return true;

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Content.Server.Administration.Logs;
-using Content.Server.EUI;
 using Content.Shared.Administration;
 using Robust.Server.Player;
 using Robust.Shared.Console;
@@ -10,9 +9,9 @@ namespace Content.Server.Administration.Commands;
 [AdminCommand(AdminFlags.Logs)]
 public sealed partial class OpenAdminLogsCommand : LocalizedEntityCommands
 {
-    [Dependency] private EuiManager _euiManager = default!;
     [Dependency] private IAdminLogManager _adminLogManager = default!;
     [Dependency] private IPlayerLocator _locator = default!;
+    [Dependency] private IPlayerManager _players = default!;
 
     public override string Command => Cmd;
     public const string Cmd = "adminlogs";
@@ -37,7 +36,7 @@ public sealed partial class OpenAdminLogsCommand : LocalizedEntityCommands
 
                 if (dbGuid == null)
                 {
-                    shell.WriteError(Loc.GetString("cmd-adminnotes-wrong-target", ("user", args[0])));
+                    shell.WriteError(Loc.GetString("cmd-admin-logs-wrong-target", ("user", args[0])));
                     return;
                 }
 
@@ -52,8 +51,7 @@ public sealed partial class OpenAdminLogsCommand : LocalizedEntityCommands
         if (args.Length != 1)
             return CompletionResult.Empty;
 
-        var playerMgr = IoCManager.Resolve<IPlayerManager>();
-        var options = playerMgr.Sessions.Select(c => c.Name).OrderBy(c => c).ToArray();
+        var options = _players.Sessions.Select(c => c.Name).OrderBy(c => c).ToArray();
         return CompletionResult.FromHintOptions(options, Loc.GetString("cmd-admin-logs-hint"));
     }
 }

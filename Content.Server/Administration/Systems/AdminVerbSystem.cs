@@ -36,6 +36,7 @@ using Robust.Shared.Toolshed;
 using Robust.Shared.Utility;
 using System.Linq;
 using Content.Shared.Chemistry.Components;
+using Content.Shared.Mind;
 using static Content.Shared.Configurable.ConfigurationComponent;
 
 namespace Content.Server.Administration.Systems
@@ -106,8 +107,6 @@ namespace Content.Server.Administration.Systems
                 mark.Impact = LogImpact.Low;
                 args.Verbs.Add(mark);
 
-                var hasMind = _mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp);
-
                 if (TryComp(args.Target, out ActorComponent? targetActor))
                 {
                     // AdminHelp
@@ -154,7 +153,7 @@ namespace Content.Server.Administration.Systems
                             var profile = _gameTicker.GetPlayerProfile(targetActor.PlayerSession);
                             var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid);
 
-                            if (hasMind)
+                            if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp))
                                 _mindSystem.TransferTo(mindId, mobUid, true, mind: mindComp);
 
                         },
@@ -203,7 +202,7 @@ namespace Content.Server.Administration.Systems
                     });
                 }
 
-                if (hasMind && mindComp?.UserId != null)
+                if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp) && mindComp.UserId != null)
                 {
                     // Erase
                     args.Verbs.Add(new Verb
@@ -243,6 +242,26 @@ namespace Content.Server.Administration.Systems
                         Category = VerbCategory.Debug,
                         Act = () => _console.RemoteExecuteCommand(player, $"vv {GetNetEntity(mindId)}"),
                     });
+                }
+
+                // Player Admin Logs. this is distinct from entity logs above as it will get the logs of the _player_
+                // that last owned the mind of the entity you are right-clicking on. words.
+                // this also means we need to get a mind manually because _mindSystem.TryGetMind checks if
+                // MindComponent.HasMind is true. But is false if a component has a mind, but it was transferred or
+                // something, which happens when someone suicides or whatever. Stinky!
+                if (TryComp<MindContainerComponent>(args.Target, out var mindContainer) && mindContainer.LastMind != null)
+                {
+                    if (TryComp<MindComponent>(mindContainer.LastMind, out var lastMind) &&
+                        lastMind.OriginalOwnerUserId != null)
+                    {
+                        args.Verbs.Add(new Verb()
+                        {
+                            Priority = -3,
+                            Text = Loc.GetString("admin-verbs-admin-logs-player"),
+                            Category = VerbCategory.Admin,
+                            Act = () => _console.RemoteExecuteCommand(player, $"adminlogs {lastMind.OriginalOwnerUserId}"),
+                        });
+                    }
                 }
 
                 // Freeze
@@ -299,7 +318,7 @@ namespace Content.Server.Administration.Systems
                 }
 
 
-                // Entity Admin Logs
+                // Admin Logs
                 if (_adminManager.HasAdminFlag(player, AdminFlags.Logs))
                 {
                     Verb logsVerbEntity = new()
@@ -316,19 +335,6 @@ namespace Content.Server.Administration.Systems
                         Impact = LogImpact.Low
                     };
                     args.Verbs.Add(logsVerbEntity);
-                }
-
-                // Player Admin Logs. this is distinct from entity logs above as it will get the logs of the _player_
-                // that last owned the mind of the entity you are right-clicking on. words.
-                if (hasMind && mindComp?.OriginalOwnerUserId != null)
-                {
-                    args.Verbs.Add(new Verb()
-                    {
-                        Priority = -3,
-                        Text = Loc.GetString("admin-verbs-admin-logs-player"),
-                        Category = VerbCategory.Admin,
-                        Act = () => _console.RemoteExecuteCommand(player, $"adminlogs {mindComp.OriginalOwnerUserId}"),
-                    });
                 }
 
                 // TeleportTo

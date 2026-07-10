@@ -48,6 +48,7 @@ namespace Content.Server.Administration.Systems
     {
         [Dependency] private IConGroupController _groupController = default!;
         [Dependency] private IConsoleHost _console = default!;
+        [Dependency] private IAdminLogManager _adminLogs = default!;
         [Dependency] private IAdminManager _adminManager = default!;
         [Dependency] private IGameTiming _gameTiming = default!;
         [Dependency] private SharedMapSystem _map = default!;
@@ -259,7 +260,10 @@ namespace Content.Server.Administration.Systems
                             Priority = -3,
                             Text = Loc.GetString("admin-verbs-admin-logs-player"),
                             Category = VerbCategory.Admin,
-                            Act = () => _console.RemoteExecuteCommand(player, $"adminlogs {lastMind.OriginalOwnerUserId}"),
+                            Act = () =>
+                            {
+                                _adminLogs.OpenEui(player, targetPlayer: lastMind.OriginalOwnerUserId);
+                            },
                         });
                     }
                 }

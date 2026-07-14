@@ -247,25 +247,18 @@ namespace Content.Server.Administration.Systems
 
                 // Player Admin Logs. this is distinct from entity logs above as it will get the logs of the _player_
                 // that last owned the mind of the entity you are right-clicking on. words.
-                // this also means we need to get a mind manually because _mindSystem.TryGetMind checks if
-                // MindComponent.HasMind is true. But is false if a component has a mind, but it was transferred or
-                // something, which happens when someone suicides or whatever. Stinky!
-                if (TryComp<MindContainerComponent>(args.Target, out var mindContainer) && mindContainer.LastMind != null)
+                if (_mindSystem.TryGetLastMindOwner(args.Target, out var lastOwner))
                 {
-                    if (TryComp<MindComponent>(mindContainer.LastMind, out var lastMind) &&
-                        lastMind.OriginalOwnerUserId != null)
+                    args.Verbs.Add(new Verb()
                     {
-                        args.Verbs.Add(new Verb()
+                        Priority = -3,
+                        Text = Loc.GetString("admin-verbs-admin-logs-player"),
+                        Category = VerbCategory.Admin,
+                        Act = () =>
                         {
-                            Priority = -3,
-                            Text = Loc.GetString("admin-verbs-admin-logs-player"),
-                            Category = VerbCategory.Admin,
-                            Act = () =>
-                            {
-                                _adminLogs.OpenEui(player, targetPlayer: lastMind.OriginalOwnerUserId);
-                            },
-                        });
-                    }
+                            _adminLogs.OpenEui(player, targetPlayer: lastOwner);
+                        },
+                    });
                 }
 
                 // Freeze

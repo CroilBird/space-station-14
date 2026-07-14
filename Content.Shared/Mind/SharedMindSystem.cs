@@ -585,7 +585,7 @@ public abstract partial class SharedMindSystem : EntitySystem
 
         lastMind = new Entity<MindComponent>(entity.Comp.LastMind.Value, lastMindComp);
 
-        return false;
+        return true;
     }
 
     /// <summary>

@@ -569,8 +569,7 @@ public abstract partial class SharedMindSystem : EntitySystem
     /// <returns>true if a last mind was found, false if not</returns>
     public bool TryGetLastMind(
         Entity<MindContainerComponent?> entity,
-        [NotNullWhen(true)] out Entity<MindComponent>? lastMind
-    )
+        [NotNullWhen(true)] out Entity<MindComponent>? lastMind)
     {
         lastMind = null;
 

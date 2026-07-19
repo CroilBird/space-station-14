@@ -30,6 +30,7 @@ jobs:
       env:
         REPO: space-wizards/space-station-14
         BRANCH: master
+        EXTRA_CATEGORIES: Admin,Maps,Rules
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit changelog update

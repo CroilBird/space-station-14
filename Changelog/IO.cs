@@ -49,11 +49,14 @@ public static class IO
     {
         using var writer = new StreamWriter(changelogMarkdownPath);
 
+        // each changelog part corresponds to a PR with a valid changelog body
         foreach (var changelogPart in changelogParts)
         {
+            // each category corresponds to a category in a PR which may have multiple changes to that category
             foreach (var category in changelogPart.Categories)
             {
-                // we will only send main ones
+                // we will only send main category ones though. the reason the other ones are included here is because
+                // the code that gets the last change needs all of them. don't worry about it
                 if (category.Category != PR.MainCategory)
                     continue;
 
@@ -76,8 +79,10 @@ public static class IO
     /// </summary>
     private static void UpdateChangelogFromPart(ChangelogData changelogPart, string changelogDir)
     {
+        // go through all the categories. these contain the actual changes
         foreach (var category in changelogPart.Categories)
         {
+            // grab the correct category file
             var categoryFile = category.Category == PR.MainCategory ? "Changelog" : category.Category;
 
             var changelogYmlPath = Path.Combine(
@@ -93,8 +98,12 @@ public static class IO
             using var reader = new StreamReader(changelogYmlPath);
             yamlStream.Load(reader);
 
+            // this is just yamldotnet shenanigans. I can't figure out how to deserialize this into an object properly
+            // using yamldotnet so we are doing it this way.
+            // here's the root node
             var changelog = (YamlMappingNode)yamlStream.Documents[0].RootNode;
 
+            // the entries node contains all the actual changelog entries
             var entries = (YamlSequenceNode)changelog.Children[new YamlScalarNode("Entries")];
 
             // now we have our full set of entries. get the last ID so we can increment it on the next one

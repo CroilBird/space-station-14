@@ -74,6 +74,7 @@ namespace Changelog
             string changelogDir
         )
         {
+            // mandatory configuration checks
             if (Config.Instance.Repo is null)
                 throw new Exception("Repository is not set in environment or could not be read from .env in working dir");
 

@@ -267,6 +267,7 @@ public static class PR
     /// <returns></returns>
     public static ChangelogData? ParsePRBody(GHPullRequest pr, List<string> extraCategories)
     {
+        // get all categories we could match
         var allCategories = new HashSet<string>
         {
             MainCategory,
@@ -274,19 +275,26 @@ public static class PR
         allCategories.UnionWith(extraCategories);
 
         var body = CommentRegex.Replace(pr.Body!, "");
+
+        // match the :[cl]: part to make sure we have an actual changelog
         var match = ChangelogHeaderRegex.Match(body);
         if (!match.Success)
             return null;
 
+        // get the author. this defaults to the PR username if it is not set
         var author = match.Groups[1].Success ? match.Groups[1].Value.Trim() : pr.User.Login;
         var changelogBody = body.Substring(match.Index + match.Length);
 
+        // default to main category
         var currentCategory = MainCategory;
+
         var entries = new List<(string, ChangelogData.Change)>();
 
+        // now traverse through the rest of the changelog after the :[cl]: [name] header
         var reader = new StringReader(changelogBody);
         while (reader.ReadLine() is { } line)
         {
+            // find a category to match
             var categoryMatch = ChangelogCategoryRegex.Match(line);
             if (categoryMatch.Success)
             {
@@ -294,6 +302,8 @@ public static class PR
                 // Check if it's actually a defined category, skip it otherwise.
                 var categoryName = categoryMatch.Groups[1].Value;
 
+                // the changelog convention is all uppercase letters for the category. this should probably be changed
+                // to be less strict. convert this into the name we use for the file either way
                 var correctedName = categoryName.ToUpperInvariant() switch
                 {
                     "ADMIN" => "Admin",
@@ -308,10 +318,15 @@ public static class PR
                 continue;
             }
 
+            // if the above condition succeeded, we have a currentCategory that corresponds to something like Main, Admin,
+            // Rules or Maps. Otherwise, we use whatever the last category was
+
+            // get the type of change and the message (e.g. fix: message)
             var entryMatch = ChangelogEntryRegex.Match(line);
             if (!entryMatch.Success)
                 continue;
 
+            // convert the found type of change into an enum. this is more permissive than the category
             var type = entryMatch.Groups[1].Value.ToLowerInvariant() switch
             {
                 "add" => ChangelogData.ChangeType.Add,
@@ -323,10 +338,12 @@ public static class PR
 
             var message = entryMatch.Groups[2].Value.Trim();
 
+            // if all went well, add this change to the changelog entry
             if (type is { } t)
                 entries.Add((currentCategory, new ChangelogData.Change(t, message)));
         }
 
+        // assemble the changelogData from the list of changes we assembled
         var finalCategories = entries
             .GroupBy(e => e.Item1)
             .Select(g => new ChangelogData.CategoryData(g.Key, g.Select(e => e.Item2).ToImmutableArray()))
@@ -339,6 +356,9 @@ public static class PR
         };
     }
 
+    /// <summary>
+    /// Helper function to parse all PR bodies that are given in an enumerator
+    /// </summary>
     public static List<ChangelogData> ParseAllPRBodies(IEnumerable<GHPullRequest> pullRequests, List<string>? extraCategories = null)
     {
         List<ChangelogData> changelog = [];

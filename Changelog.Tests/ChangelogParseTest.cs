@@ -271,5 +271,11 @@ namespace SS14.Changelog.Tests
                     }));
             });
         }
+
+        [Test]
+        public void TestFail()
+        {
+            Assert.That(false);
+        }
     }
 }

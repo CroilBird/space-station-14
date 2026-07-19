@@ -33,6 +33,13 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
+    - name: Update changelog YML
+      run: dotnet run --project Changelog update -d Resources/Changelog
+      env:
+        REPO: space-wizards/space-station-14
+        BRANCH: master
+        GITHUB_TOKEN: {{ secrets.GITHUB_TOKEN }}
+
     - name: Build Packaging
       run: dotnet build Content.Packaging --configuration Release --no-restore /m
 

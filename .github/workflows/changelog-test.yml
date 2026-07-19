@@ -3,8 +3,8 @@ name: Test Changelog
 on:
   push:
     paths:
-      - Changelog
-      - Changelog.Tests
+      - 'Changelog/**'
+      - 'Changelog.Tests/**'
 
 jobs:
   build:

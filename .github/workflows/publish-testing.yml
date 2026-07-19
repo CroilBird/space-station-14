@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
       with:
-        sparse-checkout: 'Resources/Changelog'
+        sparse-checkout: 'Resources/Changelog/*'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v5
       with:

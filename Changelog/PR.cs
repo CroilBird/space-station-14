@@ -14,8 +14,6 @@ public static class PR
 {
     // Regexes are all copied from the old code
     // https://github.com/space-wizards/SS14.Changelog/blob/83831f3cf8d1b6e49432b4a45f5aa3c6e3f5fc2c/SS14.Changelog/Controllers/WebhookController.cs#L23
-    private static readonly Regex IsChangelogFileRegex = new Regex(@"^Resources/Changelog/Parts/.*\.yml$");
-
     private static readonly Regex ChangelogHeaderRegex =
         new Regex(@"^\s*(?::cl:|🆑) *([a-z0-9_\- ,&]+)?\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
@@ -189,14 +187,26 @@ public static class PR
         var page = 0;
         string? afterCursor = null;
 
-        while (page < Config.Instance.MaxPages)
+        while (page <= Config.Instance.MaxPages)
         {
+            page++;
+
+            string afterCursorString;
+            if (afterCursor is null)
+            {
+                afterCursorString = "null";
+            }
+            else
+            {
+                afterCursorString = $"\"{afterCursor}\"";
+            }
+
             // yes I know graphql-dotnet has variables and placeholders. no they aren't documented correctly or very well
             // no I am not going to spend more time trying to guess how they should be used. it can go kick rocks.
             // string interpolation it is
             var query = $$"""
                           {
-                            search(first: 50, query: "is:pr repo:{{repo}} base:{{branch}} is:merged merged:>={{date}}", type: ISSUE, after: {{ '"' + afterCursor + '"' ?? "null"}}) {
+                            search(first: 50, query: "is:pr repo:{{repo}} base:{{branch}} is:merged merged:>={{date}}", type: ISSUE, after: {{ afterCursorString }}) {
                               edges {
                                 node {
                                   ... on PullRequest {

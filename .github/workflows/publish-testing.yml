@@ -37,7 +37,7 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         file_pattern: 'Resources/Changelog/*.yml'
-        commit_author: 'CentComm'
+        commit_author: 'CentComm <CentComm@users.noreply.github.com>'
         commit_user_name: 'CentComm'
         commit_message: Automated changelog update [skip ci]
 

@@ -30,6 +30,7 @@ jobs:
       env:
         REPO: space-wizards/space-station-14
         BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit changelog update
       uses: stefanzweifel/git-auto-commit-action@v4

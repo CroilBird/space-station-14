@@ -2,6 +2,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Changelog;
 
+/// <summary>
+/// Class containing configuration. This is taken from the env variables or a .env file in the working directory
+/// </summary>
 public sealed class Config
 {
     public static Config Instance = new();

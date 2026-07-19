@@ -42,7 +42,7 @@ public static class PR
     private static DateTimeOffset GetLastMergedChangelogEntry(YamlMappingNode changelog)
     {
         var lastMergeTime = DateTimeOffset.MinValue;
-        
+
         var entries = (YamlSequenceNode)changelog.Children[new YamlScalarNode("Entries")];
         foreach (var entry in entries)
         {
@@ -81,10 +81,10 @@ public static class PR
         {
             "Changelog",
         };
-        
+
         if (extraCategories is not null)
             allCategories.UnionWith(extraCategories);
-        
+
         var lastMergedTime = DateTimeOffset.MinValue;
 
         foreach (var category in allCategories)
@@ -94,21 +94,9 @@ public static class PR
                 $"{category}.yml"
             );
 
-            // Yamldotnet's deserialization is, for lack of a better term, pure ass.
-            // I suspect this is the reason why part of the changelog generation stuff was in python
-            // because python's libraries actually do work.
-            // If I try to deserialize the yaml stream in any way into a proper object,
-            // it simply refuses to work. I'll make a class like
-            // public class Root {
-            //     public string Fuck;
-            // }
-            // and deserialize the following yml:
-            // Fuck: shit
-            // and Yamldotnet, in its infinite wisdom, will insist that
-            // System.Runtime.Serialization.SerializationException: Property 'Fuck' not found on type 'Root'.
-            // complete garbage.
-
-            // so instead we do a bunch of bullshit
+            // I couldn't figure out a proper way of doing deserialization into objects with yamldotnet, and it was not
+            // very helpful in telling me what I was doing wrong. If you have more experience with this and want to
+            // rewrite this and the UpdateChangelogFromPart function in IO.cs please do
 
             using var reader = new StreamReader(fileName);
             var yamlStream = new YamlStream();
@@ -151,7 +139,7 @@ public static class PR
                 $"{GithubRawDownloadBase}/{Config.Instance.Repo}/{sinceRefSha}/{Config.Instance.ChangelogRepoPath}/{category}.yml";
 
             HttpRequestMessage request = new(HttpMethod.Get, refChangelogUrl);
-            
+
             if (Config.Instance.GithubToken is not null)
                 request.Headers.Add("Authorization", $"Bearer {Config.Instance.GithubToken}");
 
@@ -161,14 +149,14 @@ public static class PR
             {
                 throw new Exception("Could not get changelog content: " + response.Content.ReadAsStringAsync().Result);
             }
-            
+
             // read the file YML
             using var reader = new StreamReader(response.Content.ReadAsStream());
             var yamlStream = new YamlStream();
             yamlStream.Load(reader);
 
             var changelog = (YamlMappingNode)yamlStream.Documents[0].RootNode;
-            
+
             // Get the last merged time found in this file
             var categoryLastMergedTime = GetLastMergedChangelogEntry(changelog);
 
@@ -177,30 +165,32 @@ public static class PR
                 lastMergedTime = categoryLastMergedTime;
             }
         }
-    
+
         return lastMergedTime;
     }
 
     /// <summary>
     /// Returns a list of github pull request objects that have a body and were merged into `<paramref name="branch"/>` after `<paramref name="lastMergeTime"/>`
+    /// This uses github's graphql API to get only the PRs after a certain date, and should be pretty robust.
+    /// You really should not be hitting the maxpages limit unless changelogs have not been generated for like 6 months
     /// </summary>
     /// <param name="lastMergeTime">The last merged PR. this will NOT be included in the diff</param>
     /// <param name="repo">The repository to look at</param>
     /// <param name="branch">The branch serving as a base on which PRs were merged. Probably should be mastger</param>
-    /// <param name="authToken">Optional auth token if you don't want to get rate limited. This should probably not be optional</param>
+    /// <param name="authToken">Github PAT with content.read permissions or something. You NEED this or Github will get MAD</param>
     /// <returns></returns>
-    public static List<GHPullRequest> GetDiff(DateTimeOffset lastMergeTime, string repo, string branch, string? authToken)
+    public static List<GHPullRequest> GetDiff(DateTimeOffset lastMergeTime, string repo, string branch, string authToken)
     {
         List<GHPullRequest> pullRequests = [];
-        
-        
+
         // Github allows you to filter by merged after a certain date, but it only accepts the date part
         var date = lastMergeTime.ToString("yyyy-MM-dd");
 
         var page = 0;
         string? afterCursor = null;
 
-        while (page < Config.Instance.MaxPages) {
+        while (page < Config.Instance.MaxPages)
+        {
             // yes I know graphql-dotnet has variables and placeholders. no they aren't documented correctly or very well
             // no I am not going to spend more time trying to guess how they should be used. it can go kick rocks.
             // string interpolation it is
@@ -238,9 +228,8 @@ public static class PR
                 new SystemTextJsonSerializer()
             );
 
-
-            if (authToken is not null)
-                graphQL.HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {authToken}");
+            // github will actually not allow you to make graphQL api calls without an auth token
+            graphQL.HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {authToken}");
 
             var graphQLRequest = new GraphQLRequest(query);
 
@@ -259,12 +248,12 @@ public static class PR
 
             afterCursor = response.Data.Search.PageInfo.EndCursor;
         }
-        
+
         // at the end of this we have a collection of PRs with bodies
-        
+
         // order PRs by time ascending
         pullRequests = pullRequests.OrderBy(item => item.MergedAt!.Value).ToList();
-        
+
         return pullRequests;
     }
 

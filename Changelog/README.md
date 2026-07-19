@@ -23,7 +23,7 @@ It does the following:
 ### Update the changelog YMLs
 
 ```
-Description:                                                                                                                                                                                                                                                                                                                                                    
+Description:
   Updates the changelog.yml files in resources
 
 Usage:
@@ -42,7 +42,7 @@ This is intended for the master branch whenever a test publish is triggered but 
 ### Generate a diff markdown file
 
 ```
-Description:                                                                                                                                                                                                                                                                                                                                                    
+Description:
   Dumps a diff to a markdown file, for later sending to discord or hosting on CDN
 
 Usage:
@@ -65,7 +65,7 @@ This can be used to send it to a discord webhook or upload to a cdn or whatever
 ### Send the contents of a diff markdown to a discord webhook
 
 ```
-Description:                                                                                                                                                                                                                                                                                                                                                    
+Description:
   Send changelog markdown file to a discord webhook
 
 Usage:
@@ -77,16 +77,16 @@ Options:
 ```
 
 Reads the content of the input `--changelog-md-path` and sends the parts of it (split by discords max character limit of 2000)
-to the webhook specified by `--discord-webhook-url` 
+to the webhook specified by `--discord-webhook-url`
 
 
 # how this should be used probably
 
-### During publish testing: 
+### During publish testing:
 
-Workflow: checkout code -> `changelog update -d /path/to/Resources/Changelog` -> commit -> build -> publish testing build
+Workflow: checkout code -> `dotnet run --project Changelog -- update -d /path/to/Resources/Changelog` -> commit -> build -> publish testing build
 
 ### During publish stable
 
-Workflow: get last publish ref -> run `changelog dump-diff -s [ref] -c diff.md` -> build -> publish -> if all goes well, `changelog send-webhook -c diff.md`
+Workflow: get last publish ref -> run `dotnet run --project Changelog -- dump-diff -s [ref] -c diff.md` -> build -> publish -> if all goes well, `dotnet run --project Changelog -- send-webhook -c diff.md`
 

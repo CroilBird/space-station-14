@@ -82,13 +82,13 @@ namespace Changelog
         )
         {
             if (Config.Instance.Repo is null)
-                throw new Exception("Repository not set");
+                throw new Exception("Repository is not set in environment or could not be read from .env in working dir");
 
             if (Config.Instance.Branch is null)
-                throw new Exception("Branch is not set");
+                throw new Exception("Branch is not set in environment or could not be read from .env in working dir");
 
-            if (Config.Instance.GithubToken is not null)
-                Console.WriteLine("Using github token");
+            if (Config.Instance.GithubToken is null)
+                throw new Exception("Github token is not set in environment or could not be read from .env in working dir");
 
             List<string> extraCategories = [];
             if (Config.Instance.ExtraCategories is not null)
@@ -127,13 +127,13 @@ namespace Changelog
         )
         {
             if (Config.Instance.Repo is null)
-                throw new Exception("Repository not set");
+                throw new Exception("Repository is not set in environment or could not be read from .env in working dir");
 
             if (Config.Instance.Branch is null)
-                throw new Exception("Branch is not set");
+                throw new Exception("Branch is is not set in environment or could not be read from .env in working dir");
 
-            if (Config.Instance.GithubToken is not null)
-                Console.WriteLine("Using github token");
+            if (Config.Instance.GithubToken is null)
+                throw new Exception("Github token is not set in environment or could not be read from .env in working dir");
 
             List<string> extraCategories = [];
             if (Config.Instance.ExtraCategories is not null)

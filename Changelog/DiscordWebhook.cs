@@ -39,7 +39,6 @@ public static class DiscordWebhook
                 return false;
 
             sb.Clear();
-            sb.Append(nextLine + "\n");
         }
 
         if (sb.Length > 0)

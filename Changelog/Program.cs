@@ -6,7 +6,7 @@ namespace Changelog
     {
         static int Main(string[] args)
         {
-            // options
+            // create options for the command line
             Option<string> changelogDirOption = new("--changelog-dir", "-d")
             {
                 Description = "Path to the changelog directory",
@@ -19,19 +19,14 @@ namespace Changelog
                 Required = true,
             };
 
-            Option<string> discordWebhookUrlOption = new("--discord-webhook-url", "-u")
-            {
-                Description = "URL for the discord webhook",
-                Required = true,
-            };
-
+            // changelogMarkdownPathOption will function both for dump-diff and discord-webhook, as output and input respectively
             Option<string> changelogMarkdownPathOption = new("--changelog-md-path", "-c")
             {
                 Description = "Path where the changelog markdown file is located. This will be sent to the discord webhook.",
                 Required = true,
             };
 
-
+            // Create the root command and subcommands for the command line
             RootCommand rootCommand = new("Changelog generator for SS14");
 
             // Update changelog subcommand
@@ -60,11 +55,9 @@ namespace Changelog
             Command sendWebhookCommand = new("send-webhook", "Send changelog markdown file to a discord webhook");
 
 
-            sendWebhookCommand.Options.Add(discordWebhookUrlOption);
             sendWebhookCommand.Options.Add(changelogMarkdownPathOption);
 
             sendWebhookCommand.SetAction(parseResult => SendDiscordWebhook(
-                parseResult.GetValue(discordWebhookUrlOption)!,
                 parseResult.GetValue(changelogMarkdownPathOption)!
             ));
 
@@ -165,17 +158,14 @@ namespace Changelog
             return 0;
         }
 
-        private static int SendDiscordWebhook(string discordWebhookUrl, string? changelogMarkdownPath)
+        private static int SendDiscordWebhook(string changelogMarkdownPath)
         {
-            if (changelogMarkdownPath is null)
-            {
-                Console.WriteLine();
-                return 1;
-            }
+            if (Config.Instance.DiscordWebHook is null)
+                throw new Exception("Discord webhook is not set in environment or could not be read from .env in working dir");
 
             using var reader = new StreamReader(changelogMarkdownPath);
 
-            if (!DiscordWebhook.SendDiffInParts(discordWebhookUrl, reader))
+            if (!DiscordWebhook.SendDiffInParts(Config.Instance.DiscordWebHook, reader))
                 return 1;
 
             return 0;

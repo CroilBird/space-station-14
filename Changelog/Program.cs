@@ -12,13 +12,13 @@ namespace Changelog
                 Description = "Path to the changelog directory",
                 Required = true,
             };
-            
+
             Option<string> sinceRefShaOption = new("--sha", "-s")
             {
                 Description = "Specific ref sha to compare changes to. Good chance this should be the github.event.pull_request.base.sha workflow env",
                 Required = true,
             };
-            
+
             Option<string> discordWebhookUrlOption = new("--discord-webhook-url", "-u")
             {
                 Description = "URL for the discord webhook",
@@ -27,13 +27,13 @@ namespace Changelog
 
             Option<string> changelogMarkdownPathOption = new("--changelog-md-path", "-c")
             {
-                Description = "Path where the changelog markdown file is located. This will be sent to the discord webhook. Won't generate if not included.",
+                Description = "Path where the changelog markdown file is located. This will be sent to the discord webhook.",
                 Required = true,
             };
-            
-            
+
+
             RootCommand rootCommand = new("Changelog generator for SS14");
-            
+
             // Update changelog subcommand
             Command updateCommand = new("update", "Updates the changelog.yml files in resources");
 
@@ -96,7 +96,7 @@ namespace Changelog
 
             // Get the last merged PR time
             var lastMergedTime = PR.GetLastMergedTimeFromChangelogs(changelogDir, extraCategories);
-            
+
             Console.WriteLine($"Generating diff from {lastMergedTime}");
 
             // Get the list of PRs that were merged since last time.
@@ -112,7 +112,7 @@ namespace Changelog
                 Console.WriteLine("Nothing to do");
                 return 0;
             }
-            
+
             Console.WriteLine($"Generated {changelogs.Count} changelogs");
 
             // Add these parts to the actual changelog and trim older entries
@@ -141,14 +141,14 @@ namespace Changelog
 
             // Get the last merged PR time
             var lastMergedTime = PR.GetLastMergedFromRef(sinceRefSha, extraCategories);
-            
+
             Console.WriteLine($"Generating diff from {lastMergedTime}");
 
             // Get the list of PRs that were merged since last time.
             var diff = PR.GetDiff(lastMergedTime, Config.Instance.Repo, Config.Instance.Branch, Config.Instance.GithubToken);
 
             Console.WriteLine($"Collected {diff.Count} pull requests");
-            
+
             // Generate a new YMLfest out of this
             var changelogs = PR.ParseAllPRBodies(diff, extraCategories);
 
@@ -157,9 +157,9 @@ namespace Changelog
                 Console.WriteLine("Nothing to do");
                 return 0;
             }
-            
+
             Console.WriteLine($"Generated {changelogs.Count} changelogs");
-            
+
             IO.DumpChangelogToMarkdown(changelogMarkdownPath, changelogs);
 
             return 0;
